@@ -1,0 +1,73 @@
+<%- include("../partials/header")%>
+
+	<div class="container">
+		<form action="/destinations/new" method="POST" class="form-signin">
+			<h1 class="h3 mb-3 font-weight-normal text-center">Add a new destination </h1>
+			<div class="form-group">
+				<label for="inputName" class="sr-only">Name</label>
+				<input type="text" id="inputName" class="form-control" placeholder="Destination name" name="destination[name]" required autofocus>
+			</div>
+			
+			<div class="form-group">
+				<label for="inputImage" class="sr-only">Image</label>
+				<input type="text" id="inputImage" class="form-control" placeholder="Destination image" name="destination[image]" required autofocus>
+			</div>
+			
+			<div class="form-group">
+				<label for="inputDescription" class="sr-only">Description</label>
+				<textarea type="text" id="inputDescription" class="form-control" placeholder="Destination description" name="destination[description]" rows="5" cols="70" required autofocus></textarea>
+			</div>
+			
+			<div class="form-group">
+				<label for="inputType" class="sr-only">Type</label>
+				<select id="inputType" class="form-control" name="destination[typeOf]" required autofocus>
+					<option value="restaurant">Restaurant</option>
+					<option value="shop">Shop</option>
+					<option value="temple">Temples</option>
+					<option value="shrine">Shrine</option>
+					<option value="city">Other city</option>
+					<option value="hotel">Hotel</option>
+					<option value="ryokan">Ryokan</option>
+				</select>
+			</div>
+			
+			<div class="form-group">
+				<label for="inputCost" class="sr-only">Cost</label>
+				<span class="prefix">$</span><input type="number" id="inputCost" class="form-control" placeholder="Destination cost, if any" name="destination[cost]" min="0" step="1.0" autofocus>
+			</div>
+			
+			<div class="form-group">
+				<label for="inputSeason" class="sr-only">Seasonal?</label>
+				<label for="seasonInput">Seasonal Destination?</label>
+				<input id="seasonInput" class="seasonBox" type="checkbox" onchange="valueChanged()">
+				<select class="seasonOptions" style="display:none" name="destination[season]">
+					<option value="none" selected>None</option>
+					<option value="winter">Winter</option>
+					<option value="spring">Spring</option>
+					<option value="summer">Summer</option>
+					<option value="fall">Fall</option>
+				</select> <i class="fas fa-question-circle" data-toggle="tooltip" data-placement="right" title="Check if seasonal"></i>
+			</div>
+			
+			<div class="form-group">
+				<label for="inputStreetAddress" class="sr-only">Address</label>
+				<input type="text" id="inputStreetAddress" class="form-control" placeholder="Destination Address" name="destination[address]" required autofocus>
+			</div>
+	
+			<!--Will all you to adjust later when expanding, for now all prefectures will be Kyoto
+			<div class="form-group">
+				
+				<label for="inputPrefecture" class="sr-only">Prefecture</label>
+				<input type="text" id="inputPrefecture" class="form-control" value="Kyoto prefecture" name="destination[prefecture]" required autofocus>
+			</div>-->
+			
+			<button class="btn btn-lg btn-primary btn-block" type="submit">Submit</button>
+		</form>
+		<div class="form-signin">
+			<a href="/">Go back</a>
+			<p class="mt-5 mb-3 text-muted">&copy; 2017-2020</p>
+		</div>
+	</div>
+	
+		
+<%- include("../partials/footer")%>

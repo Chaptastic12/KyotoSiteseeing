@@ -1,0 +1,153 @@
+<%- include("./partials/header")%>
+
+
+	<div class="container" id="top-margin">
+		<!--Set the carousel container up and set it so the slides fade into one another-->
+		<div id="myCarousel" class="carousel slide carousel-fade" data-ride="carousel">
+			<!--Display the indicators at the bottom of the carousel-->
+			<ol class="carousel-indicators">
+			  <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+			  <li data-target="#myCarousel" data-slide-to="1"></li>
+			  <li data-target="#myCarousel" data-slide-to="2"></li>
+			</ol>
+			<div class="carousel-inner">
+				<!--Display the first item in the carousel-->
+				<div class="carousel-item active">
+					<div class="view">
+						<img class="first-slide img-fluid bd-placeholder-img" src="https://images.unsplash.com/photo-1545569341-9eb8b30979d9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1650&q=80" alt="First slide">
+						<div class="mask rgba-black-light">
+							<div class="carousel-caption">
+								<h1>Explore Kyoto's ancient history</h1>
+								<p>Visit the long-standing temples and shrines - visit our ever expanding list of recommendations and add them to your Visit List.</p>
+								<%if(currentUser){ %>
+									<div class="d-none d-md-block">
+										<p><a class="btn btn-lg btn-danger" href="/destinations/view/" role="button">Begin looking today</a></p>
+									</div>
+								<% } else { %>
+								<!--No one is logged in, so direct them to the register page-->
+								<!--Add register logic dependent on screen size-->
+								<!--If the page is big enough, allow them to register with the modal-->
+									<div class="d-none d-md-block">
+										<p><a class="btn btn-lg btn-danger" onclick="document.getElementById('registerModal').style.display='block'" role="button">Sign up today</a></p>
+									</div>
+									<!--If the page is too small, take them to the login page-->
+									<div class="d-block d-md-none">
+										<p><a class="btn btn-lg btn-danger" href="/register" role="button" <%if(currentUser){%> disabled <%}%>>Sign up today</a></p>
+									</div>
+								<% } %>
+							</div>
+						</div>
+					</div>
+				</div>
+			<!--Display the second item in the carousel-->
+				<div class="carousel-item">
+					<div class="view">
+						<img class="second-slide img-fluid bd-placeholder-img" src="https://images.unsplash.com/photo-1515823064-d6e0c04616a7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1651&q=80" alt="Second slide">
+						<div class="mask rgba-black-light">
+							<div class="carousel-caption">
+								<h1>Enjoy expertly crafted Matcha tea</h1>
+								<p>Experience a tea ceremony like none other - performed by licensed professionals, you won't taste Matcha like this anywhere else.</p>
+								<p><a class="btn btn-lg btn-danger" href="/destinations/cities" role="button">Find Locations</a></p>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!--Display the third item in the carousel-->
+				<div class="carousel-item">
+					<div class="view">
+						<img class="third-slide img-fluid bd-placeholder-img" src="https://images.unsplash.com/photo-1593011075218-085bf703975b?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2022&q=80" alt="Third slide">
+						<div class="mask rgba-black-light">
+							<div class="carousel-caption">
+								<h1>Find places to eat</h1>
+								<p>Kyoto has plenty of exquisite foods to discover - let us help you find them so you can focus on enjoying your time.</p>
+								<p><a class="btn btn-lg btn-danger" href="/destinations/entertainment" role="button">Browse shops</a></p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--Left and right controls-->
+			<a class="carousel-control-prev" href="#myCarousel" role="button" data-slide="prev">
+			  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+			  <span class="sr-only">Previous</span>
+			</a>
+			<a class="carousel-control-next" href="#myCarousel" role="button" data-slide="next">
+			  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+			  <span class="sr-only">Next</span>
+			</a>
+		</div>
+	</div>
+
+      <!-- Marketing messaging calling out our functionality to create a personalized travel plan-->
+	<div class="container marketing">
+        <!-- Three columns of text below the carousel -->
+        <div class="row text-center">
+        	<div class="col-lg-4">
+            	<img class="rounded-circle" src="https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1952&q=80" alt="Planning your trip" width="140" height="140">
+            	<h2>Create your travel plan</h2>
+            	<p>Create an account, login, and immediately begin browsing! Look for different places to visit, eat, and more! Find a place you want to go to? Save it to your Visit List!</p>
+				<%if(currentUser){%>
+					<div class="">
+						<p><a class="btn btn-danger" href="/user/<%=currentUser.id%>" role="button">View Like List &raquo;</a></p>
+					</div>
+				<% } else {%>
+				<!--Add signup logic dependent on screen size-->
+				<!--If the page is big enough, allow them to log in with the modal-->
+					<div class="d-none d-md-block">
+						<p><a class="btn btn-danger" onclick="document.getElementById('loginModal').style.display='block'" role="button">Sign In &raquo;</a></p>
+					</div>
+					<!--If the page is too small, take them to the login page-->
+					<div class="d-block d-md-none">
+						<p><a class="btn btn-danger" href="/login" role="button">Sign In &raquo;</a></p>
+					</div>
+				<%}%>
+    		</div><!-- /.col-lg-4 -->
+        	<div class="col-lg-4">
+            	<img class="rounded-circle" src="https://images.unsplash.com/photo-1493589976221-c2357c31ad77?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=934&q=80" alt="Generic placeholder image" width="140" height="140">
+            	<h2>Find seasonal activities</h2>
+            	<p>Planning to come in a specifc season? Find different things to do depending on what season you'll be visiting!</p><br>
+            	<p><a class="btn btn-danger" href="/destinations/seasonal" role="button">View details &raquo;</a></p>
+    		</div><!-- /.col-lg-4 -->
+        	<div class="col-lg-4">
+            	<img class="rounded-circle" src="https://images.unsplash.com/photo-1515362778563-6a8d0e44bc0b?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1950&q=80" alt="Generic placeholder image" width="140" height="140">
+            	<h2>Find places to stay</h2>
+            	<p>From hotels to different types of Ryokans, you'll find the right spot to spend your time in Kyoto!</p><br><br>
+            	<p><a class="btn btn-danger" href="/destinations/hotels" role="button">View details &raquo;</a></p>
+        	</div><!-- /.col-lg-4 -->
+    	</div><!-- /.row -->
+
+
+        <!-- START THE FEATURETTES -->
+
+        <hr class="featurette-divider">
+
+        <div class="row featurette rounded">
+        	<div class="col-md-7">
+            	<h2 class="featurette-heading">See all the history Kyoto has to offer. <br><span class="text-muted">Lose yourself in the legacy.</span></h2>
+            	<p class="lead">Kyoto, which was once the Capital of Japan, is located on the island of Honshu. Mostly known for its many Buddhist temples, Shinto Shrines, as well as their gardens and imperial palaces. It won't take you long to stumble upon your first Geisha while in Kyoto, either. </p>
+        	</div>
+    		<div class="col-md-5">
+            	<img class="featurette-image img-fluid mx-auto rounded-circle" src="https://images.unsplash.com/photo-1521178754292-acb01ac7c29d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1567&q=80">
+        	</div>
+        </div>
+
+        <hr class="featurette-divider">
+
+        <div class="row featurette rounded">
+        	<div class="col-md-7 order-md-2">
+            	<h2 class="featurette-heading">Yea, Kyoto is that great <br> <span class="text-muted">Visit and judge for yourself.</span></h2>
+            	<p class="lead">Using our website, you will be able to see many of the different places Kyoto has to offer. Dive in, add things to your Like List, and find out what Kyoto has in store for you.</p>
+        	</div>
+        	<div class="col-md-5 order-md-1">
+            	<img class="featurette-image img-fluid mx-auto rounded-circle" src="https://images.unsplash.com/photo-1544142402-2945a7d54a31?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1950&q=80">
+        	</div>
+        </div>
+
+        <hr class="featurette-divider">
+
+        <!-- /END THE FEATURETTES -->
+
+    </div><!-- /.container -->
+
+		
+<%- include("./partials/footer")%>

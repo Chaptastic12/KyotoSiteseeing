@@ -1,0 +1,62 @@
+
+</div>
+<!--Login modal-->
+<div class="justify-center">
+	<div id="loginModal" class="modal">
+		<form class="modal-content animate" action="/login" method="POST">
+			<div class="imgcontainer">
+				<span onclick="document.getElementById('loginModal').style.display='none'" class="close" title="Close Modal">&times;</span>
+			</div>
+
+			<h1 class="h3 mb-3 font-weight-normal text-center">Please sign in <i class="fas fa-sign-in-alt"></i></h1>
+			<label for="inputUsername" class="sr-only">Username</label>
+			<input type="text" id="inputUsername" class="form-control" placeholder="Username" name="username" required autofocus>
+			<label for="inputPassword" class="sr-only">Password</label>
+			<input type="password" id="inputPassword" class="form-control" placeholder="Password" name="password"required>
+			<button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+
+			<div class="container" style="background-color:#f1f1f1">
+				<button class="btn btn-danger" type="button" onclick="document.getElementById('loginModal').style.display='none'" class="cancelbtn">Cancel</button>
+				<a class="float-right" href="/forgot">Forgot Password</a>
+			</div>
+		</form>
+	</div>
+<!--Register modal-->
+	<div id="registerModal" class="modal">
+		<form class="modal-content animate" action="/register" method="POST">
+			<div class="imgcontainer">
+				<span onclick="document.getElementById('registerModal').style.display='none'" class="close" title="Close Modal">&times;</span>
+			</div>
+
+			<h1 class="h3 mb-3 font-weight-normal text-center">Sign Up <i class="fas fa-sign-in-alt"></i></h1>
+
+			<label for="email" class="sr-only">Email address</label>
+			<input type="email" id="email" type="email" class="form-control" placeholder="Email address" name="email" required autofocus>
+
+			<label for="username" class="sr-only">Username</label>
+			<input type="username" id="username" type="text" class="form-control" placeholder="Username" name="username" required autofocus>
+
+			<label for="password" class="sr-only">Password</label>
+			<input type="password" id="password" class="form-control" placeholder="Password" name="password" required autofocus>
+
+			<label for="confirmPassword" class="sr-only">Confirm Password</label>
+			<input type="password" id="confirmPassword" class="form-control" placeholder="Confirm Password" name="confirmPassword" required>
+
+			<label for="secretCode" class="sr-only">secretCode</label>
+			<input type="password" id="secretCode" class="form-control" placeholder="secretCode" name="secretCode" autofocus>
+
+			<button class="btn btn-lg btn-primary btn-block" type="submit">Register</button>
+
+			<div class="container" style="background-color:#f1f1f1">
+				<button class="btn btn-danger" type="button" onclick="document.getElementById('registerModal').style.display='none'" class="cancelbtn">Cancel</button>
+			</div>
+		</form>
+	</div>
+</div>
+		<!-- Bootstrap and their dependencies-->
+ 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+		<script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+	</body>
+</html>

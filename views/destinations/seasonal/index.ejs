@@ -1,0 +1,177 @@
+<%- include("../../partials/header")%>
+
+<div class="container p-3">
+	
+	<h1 class="text-center">
+		Seasonal experiences in Kyoto!
+	</h1>
+	<h4 class="text-center">
+		<% if(season){ %>
+			Specifically for the <strong><%=season.charAt(0).toUpperCase() + season.slice(1)%>!</strong>
+		<%}%>
+	</h4>
+	<br>
+	<div class="text-center justify-content-center">
+		<div class="dropdown show">
+			<a class="btn btn-danger dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				Choose a specific season...
+			</a>
+			<div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+				<a class="dropdown-item" href="/destinations/seasonal/winter">Winter</a>
+				<a class="dropdown-item" href="/destinations/seasonal/spring">Spring</a>
+				<a class="dropdown-item" href="/destinations/seasonal/summer">Summer</a>
+				<a class="dropdown-item" href="/destinations/seasonal/fall">Fall</a>
+			</div>
+		</div>
+	</div>
+	<br>
+	<%if(destination.length === 0) {%>
+		<div class="card mb-3 mt-3 destinationCard text-center justify-content-center empty-page">
+			<h2>No results exist yet! </h2>
+			<%if(currentUser){%> 
+				<div class="d-block">
+					<a class="btn btn-danger" href="/destinations/new">Have one you'd like to submit?</a> 
+				</div>
+			<%} else {%> 
+			<!--If the page is big enough, allow them to log in with the modal-->
+				<div class="d-none d-md-block">
+					<a class="btn btn-danger" onclick="document.getElementById('loginModal').style.display='block'">Login to submit one!</a>
+				</div>
+				<!--If the page is too small, take them to the login page-->
+				<div class="d-block d-md-none">
+					<a class="btn btn-danger" href="/login">Login to submit one!</a>
+				</div>
+			<%}%>
+		</div>
+	<%} else { %>
+	<% destination.forEach(function(destination){ %>
+
+		<div class="card mb-3 destinationCard">
+			<div class="row no-gutters">
+				<div class="col-md-3">
+					<img src="<%=destination.image%>" class="card-img" alt="...">
+					<p class="card-text text-center">
+						<% if(destination.cost === null){ %>
+							<em>No cost associated with this destination!</em>
+						<% } else { %>
+							<em>$<%=destination.cost %></em>
+						<% } %>
+						<br>
+						<% if(destination.season){ %>
+							<Strong>Seasonal Activity:</Strong> <em><%=destination.season %></em>
+						<% } %>
+						
+					</p>
+				</div>
+				<div class="col-md-6">
+					<div class="card-body">
+						<h5 class="card-title"><%=destination.name%> - <%=destination.prefecture%></h5>
+						<p class="card-text"><small><%=destination.address%></small></p>
+						<hr>
+						<p class="card-text"><%=destination.description%></p>
+						<p class="card-text"><small class="text-muted"><%=destination.typeOf%> - Submitted on <%=destination.createdAt.toDateString()%> by <%=destination.author.username%></small></p>
+					</div>
+				</div>
+				<!--If the page is too small, simplify the details-->
+				<div class="col-md-3 d-block d-md-none">
+					<div class="card-body">
+						<div class="float-left">
+							<h5>Current Rating</h5>
+							<p>
+								<% if(destination.rating === 0) { %> 
+									No ratings submitted yet
+								<% } else { %>
+									<span class="fa fa-star checked"></span>
+									<span class="fa fa-star <% if (destination.rating > 1.5) { %> checked <% } %>"></span>
+									<span class="fa fa-star <% if (destination.rating > 2.5) { %> checked <% } %>"></span>
+									<span class="fa fa-star <% if (destination.rating > 3.5) { %> checked <% } %>"></span>
+									<span class="fa fa-star <% if (destination.rating > 4.5) { %> checked <% } %>"></span>
+									<br>
+									<em>(total reviews: <%= destination.reviews.length %>)</em>
+								<% } %>
+							</p>
+						</div>
+						<div class="float-right mb-1 text-center">
+							<a class="btn btn-sm btn-primary mb-2" href="/destinations/view/<%=destination._id%>">View More</a>
+							<!--Logic for the like button-->
+							<form action="/destinations/view/<%=destination._id%>/like" method="POST">
+								<div class="btm-group">
+									<% if(currentUser && destination.likes.some(function(like){
+										return like.equals(currentUser._id)
+									})) { %>
+										<button class="btn btn-sm btn-primary mb-2">
+											<i class="fas fa-thumbs-up"></i> Liked (<%=destination.likes.length%>)	
+										</button>
+									<% } else { %>
+										<button class="btn btn-sm btn-secondary mb-2">
+											<i class="fas fa-thumbs-up"></i> Like (<%=destination.likes.length%>)	
+										</button>
+									<% } %>
+								</div>
+							</form>
+							<% if(currentUser && destination.author.id.equals(currentUser._id) || currentUser && currentUser.isAdmin === true){ %>
+								<a class="btn btn-sm btn-warning" href="/destinations/<%=destination.id%>/edit">Edit</a>
+								<form class="deleteForm" action="/destinations/<%=destination.id%>?_method=DELETE" method="POST">
+									<button class="btn btn-sm btn-danger" type="submit">Delete</button>
+								</form>
+							<% } %>
+						</div>
+					</div>
+				</div>
+				<!--If the page is big enough, show all the details for the destination-->
+				<div class="col-md-3 d-none d-block-md">
+					<div class="card-body text-center">
+						<div>
+							<h5>Current Rating</h5>
+							<p>
+								<% if(destination.rating === 0) { %> 
+									No ratings submitted yet
+								<% } else { %>
+									<span class="fa fa-star checked"></span>
+									<span class="fa fa-star <% if (destination.rating > 1.5) { %> checked <% } %>"></span>
+									<span class="fa fa-star <% if (destination.rating > 2.5) { %> checked <% } %>"></span>
+									<span class="fa fa-star <% if (destination.rating > 3.5) { %> checked <% } %>"></span>
+									<span class="fa fa-star <% if (destination.rating > 4.5) { %> checked <% } %>"></span>
+									<br>
+									<em>(total reviews: <%= destination.reviews.length %>)</em>
+								<% } %>
+							</p>
+						</div>
+						<hr>
+						<a class="btn btn-sm btn-primary mb-2" href="/destinations/view/<%=destination._id%>">View More</a>
+						<!--Logic for the like button-->
+						<form action="/destinations/view/<%=destination._id%>/like" method="POST">
+							<div class="btm-group">
+								<% if(currentUser && destination.likes.some(function(like){
+									return like.equals(currentUser._id)
+								})) { %>
+									<button class="btn btn-sm btn-primary mb-2">
+										<i class="fas fa-thumbs-up"></i> Liked (<%=destination.likes.length%>)	
+									</button>
+								<% } else { %>
+									<button class="btn btn-sm btn-secondary mb-2">
+										<i class="fas fa-thumbs-up"></i> Like (<%=destination.likes.length%>)	
+									</button>
+								<% } %>
+							</div>
+						</form>
+						<% if(currentUser && destination.author.id.equals(currentUser._id) || currentUser && currentUser.isAdmin === true){ %>
+							<a class="btn btn-sm btn-warning" href="/destinations/<%=destination.id%>/edit">Edit</a>
+							<form class="deleteForm" action="/destinations/<%=destination.id%>?_method=DELETE" method="POST">
+								<button class="btn btn-sm btn-danger" type="submit">Delete</button>
+							</form>
+						<% } %>
+					</div>
+				</div>
+			</div>
+		</div>
+	<% }) %>	
+	<%}%>
+</div>
+
+
+
+
+
+
+<%- include("../../partials/footer")%>

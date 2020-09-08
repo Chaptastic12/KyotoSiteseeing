@@ -1,0 +1,86 @@
+<%- include("../partials/header")%>
+<h1>
+	hi <%=user.username%>
+</h1><br>
+
+<div class="row">
+	<div class="col-md-2">
+		<div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+			<a class="nav-link active" id="v-pills-profile-tab" data-toggle="pill" href="#likeList" role="tab" aria-controls="v-pills-profile" aria-selected="false">Like List</a>
+			<a class="nav-link" id="v-pills-messages-tab" data-toggle="pill" href="#destinations" role="tab" aria-controls="v-pills-messages" aria-selected="false">Destinations</a>
+			<a class="nav-link" id="v-pills-settings-tab" data-toggle="pill" href="#v-pills-settings" role="tab" aria-controls="v-pills-settings" aria-selected="false">Settings</a>
+		</div>
+	</div>
+	<div class="col-md-10">
+		<div class="tab-content" id="v-pills-tabContent">
+			<!--Show the Visit List-->
+			<div class="tab-pane fade show active" id="likeList" role="tabpanel" aria-labelledby="v-pills-profile-tab">
+				<div class="text-center">
+					<h2>
+						View your Liked Destinations
+					</h2>
+					<p>
+						Below is the list of all destinations that you have Liked. Here they are readily available for you to go through to see more information, or remove them from this list if you 							are no longer interested in that destination.
+					</p>
+				</div>
+				<% user.likes.forEach(function(like){ %>
+				<div class="card mb-3 destinationCard">
+					<div class="row no-gutters">
+						<div class="col-md-3">
+							<img src="<%=like.image%>" class="card-img" alt="...">
+							<p class="card-text text-center">
+								<% if(like.cost === null){ %>
+									<em>No cost associated with this destination!</em>
+								<% } else { %>
+									<em>$<%=like.cost %></em>
+								<% } %>
+							</p>
+						</div>
+						<div class="col-md-6">
+							<div class="card-body">
+								<h5 class="card-title"><%=like.name%> - <%=like.prefecture%></h5>
+								<p class="card-text"><small><%=like.address%></small></p>
+								<hr>
+								<p class="card-text"><%=like.description%></p>
+								<p class="card-text"><small class="text-muted"><%=like.typeOf%> - Submitted on <%=like.createdAt.toDateString()%> by <%=like.author.username%></small></p>
+							</div>
+						</div>
+						<div class="col-md-3">
+							<div class="card-body text-center">
+								<div>
+									<h5>Current Rating</h5>
+									<p>
+										<% if(like.rating === 0) { %> 
+											No ratings submitted yet
+										<% } else { %>
+											<span class="fa fa-star checked"></span>
+											<span class="fa fa-star <% if (like.rating > 1.5) { %> checked <% } %>"></span>
+											<span class="fa fa-star <% if (like.rating > 2.5) { %> checked <% } %>"></span>
+											<span class="fa fa-star <% if (like.rating > 3.5) { %> checked <% } %>"></span>
+											<span class="fa fa-star <% if (like.rating > 4.5) { %> checked <% } %>"></span>
+											<br>
+											<em>(total reviews: <%= like.reviews.length %>)</em>
+										<% } %>
+									</p>
+								</div>
+								<hr>
+								<a class="btn btn-sm btn-primary mb-2" href="/destinations/view/<%=like._id%>">View More</a>
+								<form action="/destinations/view/<%=like._id%>/like" method="POST">
+									<button class="btn btn-sm btn-danger" type="submit">Remove from Visit List</button>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+				<% }) %>
+			</div>
+			<!--Show the list of their created Destinations-->
+			<div class="tab-pane fade" id="destinations" role="tabpanel" aria-labelledby="v-pills-messages-tab">Destinations</div>
+			<div class="tab-pane fade" id="v-pills-settings" role="tabpanel" aria-labelledby="v-pills-settings-tab">...</div>
+		</div>
+</div>
+
+</div>
+
+
+<%- include("../partials/footer")%>
