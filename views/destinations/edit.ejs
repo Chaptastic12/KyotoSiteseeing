@@ -4,22 +4,22 @@
 		<form action="/destinations/<%=destination.id%>?_method=PUT" method="POST" class="form-signin">
 			<h1 class="h3 mb-3 font-weight-normal text-center">Edit <%=destination.name%> </h1>
 			<div class="form-group">
-				<label for="inputName" class="sr-only">Name</label>
+				<label for="inputName">Name</label>
 				<input type="text" id="inputName" class="form-control" value="<%=destination.name%>" name="destination[name]" required autofocus>
 			</div>
 			
 			<div class="form-group">
-				<label for="inputImage" class="sr-only">Image</label>
+				<label for="inputImage">Image</label>
 				<input type="text" id="inputImage" class="form-control" value="<%=destination.image%>" name="destination[image]" required autofocus>
 			</div>
 			
 			<div class="form-group">
-				<label for="inputDescription" class="sr-only">Description</label>
+				<label for="inputDescription">Description</label>
 				<textarea type="text" id="inputDescription" class="form-control" name="destination[description]" rows="5" cols="70" required autofocus><%=destination.description%></textarea>
 			</div>
 			
 			<div class="form-group">
-				<label for="inputType" class="sr-only">Type</label>
+				<label for="inputType">Type</label>
 				<select id="inputType" class="form-control" name="destination[typeOf]" required autofocus>
 					<option value="restaurant"<% if(destination.typeOf === "restaurant") { %> selected <% } %>>Restaurant</option>
 					<option value="shop" <% if(destination.typeOf === "shop") { %> selected <% } %>>Shop</option>
@@ -32,12 +32,11 @@
 			</div>
 			
 			<div class="form-group">
-				<label for="inputCost" class="sr-only">Cost</label>
-				<span class="prefix">$</span><input type="number" id="inputCost" class="form-control" value="<%=destination.cost%>" name="destination[cost]" min="0" step="1.0" autofocus>
+				<label for="inputCost">Cost</label>
+				<input type="number" id="inputCost" class="form-control" value="<%=destination.cost%>" name="destination[cost]" min="0" step="1.0" autofocus>
 			</div>
 			
 			<div class="form-group">
-				<label for="inputSeason" class="sr-only">Seasonal?</label>
 				<label for="seasonInput">Seasonal Destination?</label>
 				<input id="seasonInput" class="seasonBox" type="checkbox" onchange="valueChanged()">
 				<select class="seasonOptions" style="display:none" name="destination[season]">
@@ -50,7 +49,7 @@
 			</div>
 			
 			<div class="form-group">
-				<label for="inputStreetAddress" class="sr-only">Address</label>
+				<label for="inputStreetAddress">Address</label>
 				<input type="text" id="inputStreetAddress" class="form-control" value="<%=destination.address%>" name="destination[address]" required autofocus>
 			</div>
 	

@@ -145,4 +145,7 @@ middlewareObj.checkAdminPriveleges = function(req, res, next){
 	}
 }
 
+//Add confirmation alert
+
+
 module.exports = middlewareObj;

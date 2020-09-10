@@ -1,7 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="en ">
 	<head>
 		<!--Make site responsive on mobile/tablet -->
+		
+		<meta name="description" content="Free site to add and track places you want to go">
+	 	 <meta name="keywords" content="Kyoto, Japan, travel">
 		<meta charset="utf-8">
       	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,26 +14,9 @@
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 		<link rel="stylesheet" type="text/css" href="/stylesheets/main.css">
 		<script src="https://kit.fontawesome.com/4596b03b20.js" crossorigin="anonymous"></script>
-		<script>
-			$(document).ready(function(){
-				$("#travelLink").click(function(){
-					$(this).toggleClass("navClick");
-			  	});
-			});
-			
-			function valueChanged()
-			{
-				if($('.seasonBox').is(":checked"))   
-					$(".seasonOptions").show();
-				else
-					$(".seasonOptions").hide();
-			}
-			
-			$(function () {
-				$('[data-toggle="tooltip"]').tooltip()
-			})
-			
-		</script>
+
+		<script type="text/javascript" src='/js/main.js'></script>
+		
 	</head>
 		
 	<body>
@@ -47,7 +33,7 @@
 					<li class="nav-item d-none d-md-block">
 						<a id="travelLink" class="nav-link" data-toggle="collapse" href="#travelDestinations" role="button" aria-expanded="false" aria-controls="travelDestinations">Travel Destinations &raquo;</a>
 					</li>
-					<!--If the page is big enough, show the following instead-->
+					<!--If the page is too small, show the following instead-->
 					<li class="nav-item d-block d-md-none">
 						<a class="nav-link" data-toggle="collapse" href="#smTravelDestinations" role="button" aria-expanded="false" aria-controls="smTravelDestinations">Travel Destination &raquo;</a>
 						<ul class="navbar-nav collapse" id="smTravelDestinations">
@@ -58,10 +44,19 @@
 							<li class="nav-item"><a href="/destinations/hotels" class="nav-link">&nbsp;&nbsp;&nbsp;&nbsp;Hotels &amp; Ryokans</a></li>
 						</ul>
 					</li>
-					<li>
-					</li>
 				</ul>
 				<ul class="navbar-nav">
+					<li>
+						<!--Search form-->
+						<div class="text-center mr-3">
+							<form class="form-inline" action="/destinations" method="GET">
+								<div class="mt-2">
+									<input class="form-control" type="text" name="search" placeholder="Search Destinations">
+									<input class="btn btn-light" type="submit" value="Search">
+								</div>
+							</form>
+						</div>
+					</li>
 					<li class="nav-item user-dropdown">
 						<% if(currentUser){ %>
 							<a href="#" class="nav-link">
@@ -107,7 +102,7 @@
 			</div>
 	  	</nav>
 		<!--End main nav bar functionality-->
-		
+
 		<!--Begin Travel Destinations sub-menu-->
 		<div class="row trav-sub-menu">
 			<div class="col">

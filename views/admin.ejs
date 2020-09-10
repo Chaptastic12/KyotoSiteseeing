@@ -1,44 +1,56 @@
 <%- include("./partials/header")%>
-
 <h1 class="text-center">Admin Console</h1><br>
 
 <div class="row">
 	<!--Show our admin nav buttons-->
 	<div class="col-md-2">
 		<div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-			<a class="nav-link active" id="v-pills-home-tab" data-toggle="pill" href="#v-pills-home" role="tab" aria-controls="v-pills-home" aria-selected="true">Users List</a>
-			<a class="nav-link" id="v-pills-messages-tab" data-toggle="pill" href="#destinations" role="tab" aria-controls="v-pills-messages" aria-selected="false">Destinations</a>
+			<a class="nav-link active" id="v-pills-home-tab" data-toggle="pill" href="#users" role="tab" aria-controls="v-pills-home" aria-selected="true">Users List</a><!--
+			<a class="nav-link" id="v-pills-messages-tab" data-toggle="pill" href="#destinations" role="tab" aria-controls="v-pills-messages" aria-selected="false">Reported Destinations</a>
+			<a class="nav-link" id="v-pills-messages-tab" data-toggle="pill" href="#destinations" role="tab" aria-controls="v-pills-messages" aria-selected="false">Reported Comments</a>-->
 		</div>
 	</div>
 	<!--Show the content, controlled by the above nav buttons-->
 	<div class="col-md-10">
+		<div class="alert alert-danger alert-dismissible text-center show" role="alert">
+			<strong>Info!</strong> You can only update one user at a time. 
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
 		<div class="tab-content" id="v-pills-tabContent">
 			<!--Show all users who are registered-->
-			<div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">
+			<div class="tab-pane show active" id="users" role="tabpanel" aria-labelledby="v-pills-home-tab">
 				<table class="table">
 					<thead>
 						<tr>
 							<th scope="col">Username</th>
 							<th scope="col">E-mail</th>
+							<th scope="col">Admin</th>
 							<th scope="col">Likes</th>
-							<th scope="col">Edit</th>
+							<th scope="col"></th>
 						</tr>
 					</thead>
 					<tbody>
 					<% users.forEach(function(user){ %>
 						<tr>
-							<th scope="row"><%=user.username%></th>
-							<td><%=user.email%></td>
-							<td><%=user.likes.length%></td>
-							<td><button class="btn btn-danger">Edit</button></td>
+							<form class="form-inline" action="/admin/edit/<%=user._id%>" method="POST">
+								<th scope="row"><input class="form-control" value='<%=user.username%>' name="userEdit[username]"></th>
+								<td><input class="form-control" value='<%=user.email%>' name="userEdit[email]"></td>
+								<td><input id="adminCheckBox" type="checkbox" <%if(user.isAdmin){%>checked<%}%> name="userEdit[isAdmin]"></td>
+								<td><%=user.likes.length%></td>
+								<td><button type="submit" class="btn btn-danger"><i class="fas fa-plus-square" aria-hidden="true"></i> Update</button></td>
+							</form>
+							
 						</tr>
+						<tr></tr>
 					<% })%>
 					</tbody>
 				</table>	
 			</div> <!--End users pane-->
 			
 			<!--Show the list of all created Destinations-->
-			<div class="tab-pane fade" id="destinations" role="tabpanel" aria-labelledby="v-pills-messages-tab">
+			<!--<div class="tab-pane" id="destinations" role="tabpanel" aria-labelledby="v-pills-messages-tab">
 				<% destinations.forEach(function(destination){ %>
 					<div class="card mb-3 destinationCard">
 						<div class="row no-gutters">
@@ -93,7 +105,7 @@
 				<%})%>
 			</div><!--End destinations pane-->
 		</div>
-</div>
+	</div>
 
 </div>
 		

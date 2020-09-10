@@ -19,7 +19,11 @@ const express = require("express"),
 	  LocalStrategy  = require("passport-local"),
 	  aSync	   = require("async"),
 	  nodemailer = require("nodemailer"),
-	  crypto   	 = require("crypto");
+	  crypto   	 = require("crypto"),
+	  dotenv = require("dotenv");
+
+
+require('dotenv').config();
 
 //Initialize moment js to be used across all pages
 app.locals.moment = require("moment");
@@ -164,40 +168,94 @@ app.get("/user/:id", middleware.isLoggedIn, function(req, res){
 
 //Show our main index page that will list all of the destinations
 app.get("/destinations", function(req, res){
-	Destination.find({}, function(err, foundDestination){
-		if(err){
-			req.flash("error", err.message);
-			 res.redirect("/landing");
-		} else {
-			res.render("destinations/", {destination: foundDestination, title: "view All Destinations"});
-		}
-	});
+	const perPage = 2; // Max number of items per page
+	const pageQuery = parseInt(req.query.page); //get the page number from the query
+	let pageNumber = pageQuery ? pageQuery : 1; //Current page number
+	//The search is trickier, since we already have a query with other info in it...
+	//To combat this, grab the last character. This will be the page number, or a character
+	//Use parseInt() to verify that it is a number. Otherwise, it'll return NaN
+	const searchPageQuery = req.query.pange ? parseInt((req.query.search).slice(-1)) : 1;
+	//If it returns NaN, we know we are on page 1, as that is the only time it won't have a number at the end.
+	let searchPageNumber = searchPageQuery ? searchPageQuery : 1;
+
+
+	//Check if we passed in a search - if we did, render that. If not, render all destinations
+	if(req.query.search){
+		//Tricky due to our pagination - it adds a bunch of stuff to our search term. We need to clean that up.
+		//Find the index where the first ? is.
+		const n = req.query.search.indexOf('?');
+		//Create a substring of everything that is then BEFORE that first ?
+		const spliceSearch = req.query.search.substring(0, n!=-1 ? n: req.query.search.length);
+		//Put it into the RegExp() so we are effectively searching the right term again
+		const regex = new RegExp(escapeRegex(spliceSearch), 'gi');
+		//If wanting to expand in the future, use Destination.find({$or: [{name: regex},{description: regex}]}, function
+		Destination.find({name: regex}).skip((perPage * searchPageNumber) - perPage).limit(perPage).exec(function(err, foundDestination){
+			Destination.count({name:regex}).exec(function(err, count){ //count how many destinations we have
+				if(err){
+					req.flash("error", err.message);
+					res.redirect("/landing");
+				} else {
+					//If no error, check if any results were found
+					if(foundDestination.length === 0){
+						req.flash("error", "No search results were found " + req.query.search);
+						res.redirect("back");
+					} else {
+						res.render("destinations/", {destination: foundDestination, count: count, id:"?search="+req.query.search, title: "your search results", search: req.query.search, current: searchPageNumber, pages: Math.ceil(count / perPage)});
+					}
+				}
+			});
+		});
+	} else { //If not a search, just load all of the destinations
+		Destination.find({}).skip((perPage * pageNumber) - perPage).limit(perPage).exec(function(err, foundDestination){
+			Destination.count({}).exec(function(err, count){ //count how manmy destinations we have
+				if(err){
+					req.flash("error", err.message);
+					 res.redirect("/landing");
+				} else {
+					res.render("destinations/", {destination: foundDestination, count: count, id: "/", title: "view All Destinations", current: pageNumber, pages: Math.ceil(count / perPage)})
+				}
+			});
+		});
+	}
 });
 
-//Show our Seasonal destinations
+
+//Show all our Seasonal destinations
 app.get("/destinations/seasonal", function(req, res){
-	Destination.find({season: {$in: ["fall", "spring", "winter", "summer"]}}, function(err, foundDestination){
-		if(err){
-			req.flash("error", err.message);
-			res.redirect("/");
-		} else {
-			res.render("destinations/seasonal", {destination: foundDestination, season: null});
-		}
+	const perPage = 2; // Max number of items per page
+	const pageQuery = parseInt(req.query.page); //get the page number from the query
+	let pageNumber = pageQuery ? pageQuery : 1; //Current page number
+	
+	Destination.find({season: {$in: ["fall", "spring", "winter", "summer"]}}).skip((perPage * pageNumber) - perPage).limit(perPage).exec(function(err, foundDestination){
+		Destination.count({season: {$in: ["fall", "spring", "winter", "summer"]}}).exec(function(err, count){ //count how manmy destinations we have
+			if(err){
+				req.flash("error", err.message);
+				res.redirect("/");
+			} else {
+				res.render("destinations/seasonal", {destination: foundDestination, season: null, current: pageNumber, pages: Math.ceil(count / perPage)});
+			}
+		});
 	});
 });
 
 //If they request a specific season...
 app.get("/destinations/seasonal/:id", function(req, res){
+	const perPage = 2; // Max number of items per page
+	const pageQuery = parseInt(req.query.page); //get the page number from the query
+	let pageNumber = pageQuery ? pageQuery : 1; //Current page number
+	
 	if(req.params.id === null){
-		
+		res.redirect("/destinations/seasonal");
 	}else {
-		Destination.find({season: req.params.id}, function(err, foundDestination){
-			if(err){
-				req.flash("error", err.message);
-				res.redirect("/");
-			} else {
-				res.render("destinations/seasonal", {destination: foundDestination, season: req.params.id});
-			}
+		Destination.find({season: req.params.id}).skip((perPage * pageNumber) - perPage).limit(perPage).exec(function(err, foundDestination){
+			Destination.count({season: req.params.id}).exec(function(err, count){ //count how manmy destinations we have
+				if(err){
+					req.flash("error", err.message);
+					res.redirect("/");
+				} else {
+					res.render("destinations/seasonal", {destination: foundDestination, season: req.params.id, current: pageNumber, pages: Math.ceil(count / perPage), count:count});
+				}
+			});
 		});
 	}
 })
@@ -385,6 +443,20 @@ app.get("/destinations/view/:id/reviews/:review_id/edit", middleware.checkReview
 	})
 	
 })
+
+//show the reviews page that will list all reviews.
+app.get('/destinations/view/:id/reviews', function(req, res){
+	Destination.findById(req.params.id).populate("reviews").exec(function(err, foundDestination){
+		if(err){
+			req.flash("error", err.message);
+			res.redirect("back");
+		} else {
+			res.render("destinations/reviews", {destination: foundDestination});
+		}
+	});
+});
+
+
 //Handle the logic for submitting a review. ensure you are logged in to do so and that you havent already submitted one.
 app.post("/destinations/view/:id/reviews", middleware.checkReviewExistence, function(req, res){
 	Destination.findById(req.params.id).populate("reviews").exec(function(err, foundDestination){
@@ -521,65 +593,32 @@ app.post("/destinations/view/:id/like", middleware.isLoggedIn, function(req, res
 //Load our index page if they come in with an id parameter
 app.get("/destinations/:id", function(req, res){
 	
-	//check if the url is our direction for the shops and restaurants
+	const perPage = 2; // Max number of items per page
+	const pageQuery = parseInt(req.query.page); 
+	let pageNumber = pageQuery ? pageQuery : 1; //Current page number
+	let filterParams = [""];
+	
 	if(req.params.id === "entertainment"){
-		//since were looking for multiple typeOf's, we need to use $in to accomplish this
-		Destination.find({typeOf: {$in: ["restaurant", "shop"]}}, function(err, foundDestination){
+		filterParams = ["restaurant", "shop"];
+		}else if(req.params.id === "temples") {
+			filterParams = ["temple", "shrine"];
+			} else if(req.params.id === "exploration"){
+				filterParams = ["city"];
+				} else if(req.params.id === "hotels"){
+					filterParams =  ["hotel", "ryokan"];
+					} 
+			
+	//since were looking for multiple typeOf's, we need to use $in to accomplish this
+	Destination.find({typeOf: {$in: filterParams}}).skip((perPage * pageNumber) - perPage).limit(perPage).exec(function(err, foundDestination){
+		Destination.count({typeOf: {$in: filterParams}}).exec(function(err, count){ //count how manmy destinations we have
 			if(err){
 				req.flash("error", err.message);
 				res.redirect("/");
 			} else {
-				res.render("destinations/", {destination: foundDestination, title: req.params.id});
+				res.render("destinations/", {destination: foundDestination, count: count, id: '/'+req.params.id, title: req.params.id, current: pageNumber, pages: Math.ceil(count / perPage)});
 			}
-		});
-		//check next if our url direction is pointing to temples and shrines
-	} else if(req.params.id === "temples") {
-		//since were looking for multiple typeOf's, we need to use $in to accomplish this
-		Destination.find({typeOf: {$in: ["temple", "shrine"]}}, function(err, foundDestination){
-			if(err){
-				req.flash("error", err.message);
-				res.redirect("/");
-			} else {
-				res.render("destinations/", {destination: foundDestination, title: req.params.id});
-			}
-		});
-		//check if were pointing towards our city direction
-	} else if(req.params.id === "exploration"){
-		//since were looking for just one typOf, no need for $in
-		Destination.find({typeOf: "city"}, function(err, foundDestination){
-			if(err){
-				req.flash("error", err.message);
-				res.redirect("/");
-			} else {
-				res.render("destinations/", {destination: foundDestination, title: req.params.id});
-			}
-		});
-		//check if were pointing at our hotels section
-	} else if(req.params.id === "hotels"){
-		//since were looking for multiple typeOf's, we need to use $in to accomplish this
-		Destination.find({typeOf: {$in: ["hotel", "ryokan"]}}, function(err, foundDestination){
-			if(err){
-				req.flash("error", err.message);
-				res.redirect("/");
-			} else {
-				res.render("destinations/", {destination: foundDestination, title: req.params.id});
-			}
-		});
-		//if we are pointing at none of the above, then the user decided to enter their own ID. we will handle
-		//this by sending them back to the default page.
-	} else if(req.params === "seasonal"){
-		res.send("seasonal page will go here");
-	} else {
-		//If they enter in an id that doesn't exist, just send them the page with everything
-		Destination.find({}, function(err, foundDestination){
-			if(err){
-				req.flash("error", err.message);
-				res.redirect("/");
-			} else {
-				res.render("destinations/", {destination: foundDestination, title: "view All Destinations"});
-			}
-		});
-	}
+		})
+	});
 });
 
 //==========================
@@ -737,6 +776,30 @@ app.get("/admin", middleware.checkAdminPriveleges, function(req, res){
 	})
 })
 
+app.post("/admin/edit/:id", middleware.checkAdminPriveleges, function(req, res){
+	User.findOne({id: req.params.id}, function(err, foundUser){
+		if(err){
+			req.flash("error", err.message);
+			res.redirect("back");
+		} else {
+			if(req.body.userEdit.isAdmin === "on"){
+				req.body.userEdit.isAdmin = true;;
+			} else{
+				req.body.userEdit.isAdmin = false;
+			}
+			User.findByIdAndUpdate(req.params.id, req.body.userEdit, function(err, foundUser){
+				if(err){
+					req.flash("error", err.message);
+					res.redirect("back");
+				} else {
+					req.flash("success", "User " + foundUser.username +  " has been updated");
+					res.redirect("/admin");
+				}
+			})
+		}
+	})
+});
+
 //=========================
 //CATCH ALL ROUTE
 //=========================
@@ -745,6 +808,15 @@ app.get("*", function(req, res){
 	req.flash("error", "That page does not exist");
 	res.redirect("/");
 })
+
+//====================
+//DECLARATIONS
+//======================
+//Declaration for our search to match any character
+function escapeRegex(text) {
+	//match any characters globally
+	return text.replace(/[-[\]{}()*+?.,\\^$|@\s]/g, "\\&&");
+};
 
 //==========================
 //LISTEN FOR THE DATABASE

@@ -8,16 +8,24 @@
 				<span onclick="document.getElementById('loginModal').style.display='none'" class="close" title="Close Modal">&times;</span>
 			</div>
 
-			<h1 class="h3 mb-3 font-weight-normal text-center">Please sign in <i class="fas fa-sign-in-alt"></i></h1>
-			<label for="inputUsername" class="sr-only">Username</label>
-			<input type="text" id="inputUsername" class="form-control" placeholder="Username" name="username" required autofocus>
-			<label for="inputPassword" class="sr-only">Password</label>
-			<input type="password" id="inputPassword" class="form-control" placeholder="Password" name="password"required>
+			<p class="h4 mb-3 text-center">Please sign in <i class="fas fa-sign-in-alt"></i></p>
+
+			<!-- Username -->
+			<input type="text" id="inputUsername" class="form-control mb-3" placeholder="Username" name="username" required autofocus>
+
+			<!-- Password -->
+			<input type="password" id="inputPassword" class="form-control mb-3" placeholder="Password" name="password" required>
+		
+			<!-- Sign in button -->
 			<button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+
+			<!-- Forgot Password-->
+			<div class="form-signin">
+				<a href="/forgot">Forgot Password</a>
+			</div>
 
 			<div class="container" style="background-color:#f1f1f1">
 				<button class="btn btn-danger" type="button" onclick="document.getElementById('loginModal').style.display='none'" class="cancelbtn">Cancel</button>
-				<a class="float-right" href="/forgot">Forgot Password</a>
 			</div>
 		</form>
 	</div>
@@ -28,24 +36,26 @@
 				<span onclick="document.getElementById('registerModal').style.display='none'" class="close" title="Close Modal">&times;</span>
 			</div>
 
-			<h1 class="h3 mb-3 font-weight-normal text-center">Sign Up <i class="fas fa-sign-in-alt"></i></h1>
+			<p class="h4 mb-3 text-center">Sign up <i class="fas fa-sign-in-alt"></i></p>
 
-			<label for="email" class="sr-only">Email address</label>
-			<input type="email" id="email" type="email" class="form-control" placeholder="Email address" name="email" required autofocus>
+			<!-- E-mail -->
+			<input type="email" id="email" class="form-control" placeholder="E-mail" name="email" required autofocus>
 
-			<label for="username" class="sr-only">Username</label>
-			<input type="username" id="username" type="text" class="form-control" placeholder="Username" name="username" required autofocus>
+			<!-- Password -->
+			<input type="password" id="password" class="form-control" placeholder="Password" name="password" required>
+			<!-- Confirm Password -->
+			<input type="password" id="confirmPassword" class="form-control" placeholder="Password" name="confirmPassword" required>
+			
+			<!-- Confirm secretCode -->
+			<input type="password" id="secretCode" class="form-control" placeholder="secretCode" name="secretCode" required>
+		
+			<!-- Sign up button -->
+			<button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
 
-			<label for="password" class="sr-only">Password</label>
-			<input type="password" id="password" class="form-control" placeholder="Password" name="password" required autofocus>
-
-			<label for="confirmPassword" class="sr-only">Confirm Password</label>
-			<input type="password" id="confirmPassword" class="form-control" placeholder="Confirm Password" name="confirmPassword" required>
-
-			<label for="secretCode" class="sr-only">secretCode</label>
-			<input type="password" id="secretCode" class="form-control" placeholder="secretCode" name="secretCode" autofocus>
-
-			<button class="btn btn-lg btn-primary btn-block" type="submit">Register</button>
+			<!-- Forgot Password-->
+			<div class="form-signin">
+				<a href="/forgot">Forgot Password</a>
+			</div>
 
 			<div class="container" style="background-color:#f1f1f1">
 				<button class="btn btn-danger" type="button" onclick="document.getElementById('registerModal').style.display='none'" class="cancelbtn">Cancel</button>
@@ -53,6 +63,10 @@
 		</form>
 	</div>
 </div>
+
+<script>
+
+</script>
 		<!-- Bootstrap and their dependencies-->
  		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 		<script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery-slim.min.js"><\/script>')</script>

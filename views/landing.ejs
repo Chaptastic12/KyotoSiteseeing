@@ -14,7 +14,8 @@
 				<!--Display the first item in the carousel-->
 				<div class="carousel-item active">
 					<div class="view">
-						<img class="first-slide img-fluid bd-placeholder-img" src="https://images.unsplash.com/photo-1545569341-9eb8b30979d9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1650&q=80" alt="First slide">
+						<img class="first-slide img-fluid bd-placeholder-img" 
+							 src="https://images.unsplash.com/photo-1545569341-9eb8b30979d9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1650&q=80" alt="First slide">
 						<div class="mask rgba-black-light">
 							<div class="carousel-caption">
 								<h1>Explore Kyoto's ancient history</h1>
@@ -42,7 +43,8 @@
 			<!--Display the second item in the carousel-->
 				<div class="carousel-item">
 					<div class="view">
-						<img class="second-slide img-fluid bd-placeholder-img" src="https://images.unsplash.com/photo-1515823064-d6e0c04616a7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1651&q=80" alt="Second slide">
+						<img class="second-slide img-fluid bd-placeholder-img" 
+							 src="https://images.unsplash.com/photo-1515823064-d6e0c04616a7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1651&q=80" alt="Second slide">
 						<div class="mask rgba-black-light">
 							<div class="carousel-caption">
 								<h1>Enjoy expertly crafted Matcha tea</h1>
@@ -55,7 +57,8 @@
 				<!--Display the third item in the carousel-->
 				<div class="carousel-item">
 					<div class="view">
-						<img class="third-slide img-fluid bd-placeholder-img" src="https://images.unsplash.com/photo-1593011075218-085bf703975b?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2022&q=80" alt="Third slide">
+						<img class="third-slide img-fluid bd-placeholder-img" 
+							 src="https://images.unsplash.com/photo-1593011075218-085bf703975b?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2022&q=80" alt="Third slide">
 						<div class="mask rgba-black-light">
 							<div class="carousel-caption">
 								<h1>Find places to eat</h1>
@@ -81,9 +84,13 @@
       <!-- Marketing messaging calling out our functionality to create a personalized travel plan-->
 	<div class="container marketing">
         <!-- Three columns of text below the carousel -->
-        <div class="row text-center">
+        <div class="row text-center marketingItems">
+			
+			<!--Create travel plan-->
         	<div class="col-lg-4">
-            	<img class="rounded-circle" src="https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1952&q=80" alt="Planning your trip" width="140" height="140">
+            	<img class="rounded-circle" 
+					 src="https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1952&q=80" 
+					 alt="Planning your trip" width="140" height="140">
             	<h2>Create your travel plan</h2>
             	<p>Create an account, login, and immediately begin browsing! Look for different places to visit, eat, and more! Find a place you want to go to? Save it to your Visit List!</p>
 				<%if(currentUser){%>
@@ -102,14 +109,22 @@
 					</div>
 				<%}%>
     		</div><!-- /.col-lg-4 -->
+			
+			<!--Seasonal Activities-->
         	<div class="col-lg-4">
-            	<img class="rounded-circle" src="https://images.unsplash.com/photo-1493589976221-c2357c31ad77?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=934&q=80" alt="Generic placeholder image" width="140" height="140">
+            	<img class="rounded-circle" 
+					 src="https://images.unsplash.com/photo-1493589976221-c2357c31ad77?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=934&q=80" 
+					 alt="Generic placeholder image" width="140" height="140">
             	<h2>Find seasonal activities</h2>
             	<p>Planning to come in a specifc season? Find different things to do depending on what season you'll be visiting!</p><br>
             	<p><a class="btn btn-danger" href="/destinations/seasonal" role="button">View details &raquo;</a></p>
     		</div><!-- /.col-lg-4 -->
+			
+			<!--Look hotels-->
         	<div class="col-lg-4">
-            	<img class="rounded-circle" src="https://images.unsplash.com/photo-1515362778563-6a8d0e44bc0b?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1950&q=80" alt="Generic placeholder image" width="140" height="140">
+            	<img class="rounded-circle" 
+					 src="https://images.unsplash.com/photo-1515362778563-6a8d0e44bc0b?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1950&q=80" 
+					 alt="Generic placeholder image" width="140" height="140">
             	<h2>Find places to stay</h2>
             	<p>From hotels to different types of Ryokans, you'll find the right spot to spend your time in Kyoto!</p><br><br>
             	<p><a class="btn btn-danger" href="/destinations/hotels" role="button">View details &raquo;</a></p>
@@ -127,7 +142,8 @@
             	<p class="lead">Kyoto, which was once the Capital of Japan, is located on the island of Honshu. Mostly known for its many Buddhist temples, Shinto Shrines, as well as their gardens and imperial palaces. It won't take you long to stumble upon your first Geisha while in Kyoto, either. </p>
         	</div>
     		<div class="col-md-5">
-            	<img class="featurette-image img-fluid mx-auto rounded-circle" src="https://images.unsplash.com/photo-1521178754292-acb01ac7c29d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1567&q=80">
+            	<img class="featurette-image img-fluid mx-auto rounded-circle" 
+					 src="https://images.unsplash.com/photo-1521178754292-acb01ac7c29d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1567&q=80">
         	</div>
         </div>
 
@@ -139,7 +155,8 @@
             	<p class="lead">Using our website, you will be able to see many of the different places Kyoto has to offer. Dive in, add things to your Like List, and find out what Kyoto has in store for you.</p>
         	</div>
         	<div class="col-md-5 order-md-1">
-            	<img class="featurette-image img-fluid mx-auto rounded-circle" src="https://images.unsplash.com/photo-1544142402-2945a7d54a31?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1950&q=80">
+            	<img class="featurette-image img-fluid mx-auto rounded-circle" 
+					 src="https://images.unsplash.com/photo-1544142402-2945a7d54a31?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1950&q=80">
         	</div>
         </div>
 
