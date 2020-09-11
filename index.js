@@ -98,7 +98,7 @@ app.post("/register", function(req, res){
 	if(req.body.password === req.body.confirmPassword){
 		
 		//Check if they know the SecretCode - remove after creating first Admin account
-		if(req.body.secretCode === "Secretcode123"){
+		if(req.body.secretCode === process.env.ADMIN_CODE){
 			newUser.isAdmin = true;
 		}
 		
