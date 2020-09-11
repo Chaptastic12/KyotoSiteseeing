@@ -103,13 +103,14 @@ body {
 		display: block;
 	}
 }
+
 @media screen and (max-width: 1450px) {
 	.hidden {
 		display: none;
 	}
 }
 
-@media screen and (max-width: 1035px) {
+@media screen and (max-width: 1190px) {
 	.subtext{
 		font-size: 0px;
 	}

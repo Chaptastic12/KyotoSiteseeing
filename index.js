@@ -633,7 +633,6 @@ app.get("/forgot", function(req, res){
 
 //Handle forgot password logic
 app.post("/forgot", function(req, res){
-	console.log(process.env.GMAILPW);
 	aSync.waterfall([
 		function(done){
 			crypto.randomBytes(20, function(err, buf){
