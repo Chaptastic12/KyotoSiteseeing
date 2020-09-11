@@ -5,6 +5,9 @@
 		<form class="text-center p-2" action="/register" method="POST">
 
 			<p class="h4 mb-3">Sign up <i class="fas fa-sign-in-alt"></i></p>
+			
+			<!--Username-->
+			<input type="text" id="username" class="form-control" placeholder="Username" name="username" required autofocus>
 
 			<!-- E-mail -->
 			<input type="email" id="email" class="form-control mb-3" placeholder="E-mail" name="email" required autofocus>
@@ -15,17 +18,10 @@
 			<input type="password" id="confirmPassword" class="form-control mb-3" placeholder="Password" name="confirmPassword" required>
 			
 			<!-- Confirm secretCode -->
-			<input type="password" id="secretCode" class="form-control mb-3" placeholder="secretCode" name="secretCode" required>
+			<input type="password" id="secretCode" class="form-control mb-3" placeholder="secretCode" name="secretCode">
 		
 			<!-- Sign up button -->
 			<button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
-
-			<hr>
-
-			<!-- Forgot Password-->
-			<div class="form-signin">
-				<a href="/forgot">Forgot Password</a>
-			</div>
 
 		</form>
 	</div>

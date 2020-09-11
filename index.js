@@ -174,7 +174,7 @@ app.get("/destinations", function(req, res){
 	//The search is trickier, since we already have a query with other info in it...
 	//To combat this, grab the last character. This will be the page number, or a character
 	//Use parseInt() to verify that it is a number. Otherwise, it'll return NaN
-	const searchPageQuery = req.query.pange ? parseInt((req.query.search).slice(-1)) : 1;
+	const searchPageQuery = req.query.search ? parseInt((req.query.search).slice(-1)) : 1;
 	//If it returns NaN, we know we are on page 1, as that is the only time it won't have a number at the end.
 	let searchPageNumber = searchPageQuery ? searchPageQuery : 1;
 
@@ -190,7 +190,7 @@ app.get("/destinations", function(req, res){
 		const regex = new RegExp(escapeRegex(spliceSearch), 'gi');
 		//If wanting to expand in the future, use Destination.find({$or: [{name: regex},{description: regex}]}, function
 		Destination.find({name: regex}).skip((perPage * searchPageNumber) - perPage).limit(perPage).exec(function(err, foundDestination){
-			Destination.count({name:regex}).exec(function(err, count){ //count how many destinations we have
+			Destination.countDocuments({name:regex}).exec(function(err, count){ //count how many destinations we have
 				if(err){
 					req.flash("error", err.message);
 					res.redirect("/landing");
@@ -207,7 +207,7 @@ app.get("/destinations", function(req, res){
 		});
 	} else { //If not a search, just load all of the destinations
 		Destination.find({}).skip((perPage * pageNumber) - perPage).limit(perPage).exec(function(err, foundDestination){
-			Destination.count({}).exec(function(err, count){ //count how manmy destinations we have
+			Destination.countDocuments({}).exec(function(err, count){ //count how manmy destinations we have
 				if(err){
 					req.flash("error", err.message);
 					 res.redirect("/landing");
@@ -227,12 +227,12 @@ app.get("/destinations/seasonal", function(req, res){
 	let pageNumber = pageQuery ? pageQuery : 1; //Current page number
 	
 	Destination.find({season: {$in: ["fall", "spring", "winter", "summer"]}}).skip((perPage * pageNumber) - perPage).limit(perPage).exec(function(err, foundDestination){
-		Destination.count({season: {$in: ["fall", "spring", "winter", "summer"]}}).exec(function(err, count){ //count how manmy destinations we have
+		Destination.countDocuments({season: {$in: ["fall", "spring", "winter", "summer"]}}).exec(function(err, count){ //count how manmy destinations we have
 			if(err){
 				req.flash("error", err.message);
 				res.redirect("/");
 			} else {
-				res.render("destinations/seasonal", {destination: foundDestination, season: null, current: pageNumber, pages: Math.ceil(count / perPage)});
+				res.render("destinations/seasonal", {destination: foundDestination, season: null, current: pageNumber, pages: Math.ceil(count / perPage), count:count});
 			}
 		});
 	});
@@ -248,7 +248,7 @@ app.get("/destinations/seasonal/:id", function(req, res){
 		res.redirect("/destinations/seasonal");
 	}else {
 		Destination.find({season: req.params.id}).skip((perPage * pageNumber) - perPage).limit(perPage).exec(function(err, foundDestination){
-			Destination.count({season: req.params.id}).exec(function(err, count){ //count how manmy destinations we have
+			Destination.countDocuments({season: req.params.id}).exec(function(err, count){ //count how manmy destinations we have
 				if(err){
 					req.flash("error", err.message);
 					res.redirect("/");
@@ -300,7 +300,8 @@ app.post("/destinations/new", middleware.isLoggedIn, function(req, res){
 		newDestination.author.id = req.user._id;
 		newDestination.save();
 		//If no error, send them to their previous page
-		res.redirect("back");
+		req.flash("success", "Destiantion successfully added!");
+		res.redirect("/destinations");
 	});
 });
 
@@ -610,7 +611,7 @@ app.get("/destinations/:id", function(req, res){
 			
 	//since were looking for multiple typeOf's, we need to use $in to accomplish this
 	Destination.find({typeOf: {$in: filterParams}}).skip((perPage * pageNumber) - perPage).limit(perPage).exec(function(err, foundDestination){
-		Destination.count({typeOf: {$in: filterParams}}).exec(function(err, count){ //count how manmy destinations we have
+		Destination.countDocuments({typeOf: {$in: filterParams}}).exec(function(err, count){ //count how manmy destinations we have
 			if(err){
 				req.flash("error", err.message);
 				res.redirect("/");
@@ -822,6 +823,7 @@ function escapeRegex(text) {
 //LISTEN FOR THE DATABASE
 //==========================
 
-app.listen(3000, function(){
+const port = process.env.PORT || 3000;
+app.listen(port, process.env.IP, function(){
 	console.log("Koyto Server Has Started");
 });
