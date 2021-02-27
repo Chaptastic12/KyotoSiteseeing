@@ -145,7 +145,9 @@ middlewareObj.checkAdminPriveleges = function(req, res, next){
 	}
 }
 
-//Add confirmation alert
+middlewareObj.logInUser = function(req, res, next){
+	
+}
 
 
 module.exports = middlewareObj;

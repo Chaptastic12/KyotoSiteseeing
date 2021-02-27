@@ -20,7 +20,8 @@ const express = require("express"),
 	  aSync	   = require("async"),
 	  nodemailer = require("nodemailer"),
 	  crypto   	 = require("crypto"),
-	  dotenv = require("dotenv");
+	  dotenv = require("dotenv"),
+	  userRoutes = require('./routes/user-routes');
 
 
 require('dotenv').config();
@@ -43,7 +44,6 @@ mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true, useUnifiedTo
 
 //Necessary for the error/success messages
 app.use(flash());
-
 
 //Passport Configuration
 app.use(require("express-session")({
@@ -77,90 +77,12 @@ app.get("/", function(req, res){
 	res.render("landing");
 })
 
-//==========================
-//REGISTRATION ROUTES
-//==========================
+//=====================================
+// USER ROUTES
+// Handles signup, login, logout
+//=====================================
+app.use('/users/', userRoutes);
 
-//Show the Register Page
-app.get("/register", middleware.alreadyLoggedIn, function(req, res){
-	res.render("register");
-})
-
-//Handle our registeration logic
-app.post("/register", function(req, res){
-	//create our newUser object
-	let newUser = new User({
-		username: req.body.username,
-		email: req.body.email
-	});
-	
-	//make sure the passwords entered in match
-	if(req.body.password === req.body.confirmPassword){
-		
-		//Check if they know the SecretCode - remove after creating first Admin account
-		if(req.body.secretCode === process.env.ADMIN_CODE){
-			newUser.isAdmin = true;
-		}
-		
-		//use the .register from local passport to create the user. pass in the password which .register will hash for us
-		User.register(newUser, req.body.password, function(err, user){
-			if(err){
-				//If we run into an error, return the error and redirect back the register page
-				req.flash("error", err.message);
-				return res.redirect("/register");
-			} //don't need an 'else' because the return breaks us out if it fails
-			//Authenticate them and log them in
-			passport.authenticate("local")(req, res, function(){
-				//If there is no error, welcome them and send them back to the landing page
-				req.flash("success", "Welcome, " + req.body.username);
-				res.redirect("/");
-			});
-		});
-	} else {
-		//If password =/= confirm password, alert them and then redirect them back to the register page
-		req.flash("error", "Your passwords do not match");
-		res.redirect("/register");
-	}
-	
-});
-
-//==========================
-//LOGIN & OUT ROUTES
-//==========================
-
-//Show the Login Page
-app.get("/login", middleware.alreadyLoggedIn, function(req, res){
-	res.render("login");
-})
-
-//Handle the login logic - use passport.authenticate middleware to handle all the work for us. 
-//Set what happens if it fails or succeeds. Requires a username and password
-app.post("/login", passport.authenticate("local", {
-	successRedirect: "back",
-	failureRedirect: "/login"
-}), function(req, res){});
-		 
-//Handle the logout logic
-app.get("/logout", function(req, res){
-	req.logout();
-	req.flash("succes", "Successfully logged you out.");
-	res.redirect("/");
-})
-
-//=========================
-//USER PROFILE ROUTES
-//=========================
-//Add logic to ensure you can only see your own user page and no one elses. req.user._id === req.params.id
-app.get("/user/:id", middleware.isLoggedIn, function(req, res){
-	User.findById(req.params.id).populate("likes").exec(function(err, foundUser){
-		if(err){
-			req.flash("error", err.message);
-			res.redirect("back");
-		} else {
-			res.render("users/", {user: foundUser});
-		}
-	})
-})
 
 //=========================
 //DESTINATION ROUTES
@@ -633,58 +555,59 @@ app.get("/forgot", function(req, res){
 
 //Handle forgot password logic
 app.post("/forgot", function(req, res){
-	aSync.waterfall([
-		function(done){
-			crypto.randomBytes(20, function(err, buf){
-				let token = buf.toString('hex');
-				done(err, token); //create our token
-			});
-		},
-		function(token, done){
-			User.findOne({email: req.body.email}, function(err, user){
-				if(!user){ //if there is no user found
-					req.flash("error", "No accounts with that email found"); //warn them that it doesnt exist
-					return res.redirect("/forgot"); //end this call and send them back to the page to start over
-				}
+	// aSync.waterfall([
+	// 	function(done){
+	// 		crypto.randomBytes(20, function(err, buf){
+	// 			let token = buf.toString('hex');
+	// 			done(err, token); //create our token
+	// 		});
+	// 	},
+	// 	function(token, done){
+	// 		User.findOne({email: req.body.email}, function(err, user){
+	// 			if(!user){ //if there is no user found
+	// 				req.flash("error", "No accounts with that email found"); //warn them that it doesnt exist
+	// 				return res.redirect("/forgot"); //end this call and send them back to the page to start over
+	// 			}
 				
-				user.resetPasswordToken = token; //set the token to the User profile
-				user.resetPasswordExpires = Date.now() + 3600000 //1 hour, add the expiration for the token to the User profile
-				user.save(function(err){
-					done(err, token, user);
-				});
-			});
-		},
-		function(token, user, done){
-			let smtpTransport = nodemailer.createTransport({
-				service: "Gmail", 
-				auth: {
-				  user: "demodev996@gmail.com",
-				  pass: process.env.GMAILPW
-				}
-      		});
-			let mailOptions = {
-				to: user.email,
-				from: "demodev996@gmail.com",
-				subject: "Kyoto Sightseeing Password Reset",
-				text: "You are receiving this because you (or someone else) has requested the reset of the password for your account." + "\n\n" +
-				"Please click the following link, or paste it into your browser to complete the process." + "\n\n" +
-				"http://" + req.headers.host + "/reset/" + token + "\n\n" +
-				"If you did not request this, please ignore this email and your password will remain unchanged"
-			};
-			smtpTransport.sendMail(mailOptions, function(err){
-				console.log("Password reset for " + user.email + " has been sent.");
-				req.flash("success", "An e-mail has been sent to " + user.email + " with further instructions");
-				res.redirect("/");
-				done(err, "done");
-			});
-		}
-	], function(err){
-		if(err){
-			req.flash("error", err);
-			console.log(err);
-			res.redirect("/forgot");
-		}
-	});
+	// 			user.resetPasswordToken = token; //set the token to the User profile
+	// 			user.resetPasswordExpires = Date.now() + 3600000 //1 hour, add the expiration for the token to the User profile
+	// 			user.save(function(err){
+	// 				done(err, token, user);
+	// 			});
+	// 		});
+	// 	},
+	// 	function(token, user, done){
+	// 		let smtpTransport = nodemailer.createTransport({
+	// 			service: "Gmail", 
+	// 			auth: {
+	// 			  user: "demodev996@gmail.com",
+	// 			  pass: process.env.GMAILPW
+	// 			}
+    //   		});
+	// 		let mailOptions = {
+	// 			to: user.email,
+	// 			from: "demodev996@gmail.com",
+	// 			subject: "Kyoto Sightseeing Password Reset",
+	// 			text: "You are receiving this because you (or someone else) has requested the reset of the password for your account." + "\n\n" +
+	// 			"Please click the following link, or paste it into your browser to complete the process." + "\n\n" +
+	// 			"http://" + req.headers.host + "/reset/" + token + "\n\n" +
+	// 			"If you did not request this, please ignore this email and your password will remain unchanged"
+	// 		};
+	// 		smtpTransport.sendMail(mailOptions, function(err){
+	// 			console.log("Password reset for " + user.email + " has been sent.");
+	// 			req.flash("success", "An e-mail has been sent to " + user.email + " with further instructions");
+	// 			res.redirect("/");
+	// 			done(err, "done");
+	// 		});
+	// 	}
+	// ], function(err){
+	// 	if(err){
+	// 		req.flash("error", err);
+	// 		console.log(err);
+	// 		res.redirect("/forgot");
+	// 	}
+	// });
+	res.redirect("/forgot");
 });
 
 //Show the reset page if a token actually exists, if not warn them and redirect back to the forgot page
@@ -703,26 +626,26 @@ app.post("/reset/:token", function(req, res){
 	aSync.waterfall([
 		function(done){
 		User.findOne({resetPasswordToken: req.params.token}, function(err, user){
-		if(!user){
-			req.flash("error", "Password reset token is invalid or has expired");
-			return res.redirect("/");
-		}
-		
-		if(req.body.password === req.body.confirm){
-			user.setPassword(req.body.password, function(err){
-				user.resetPasswordToken = undefined;
-				user.resetPasswordExpires = undefined;
-				
-				user.save(function(err){
-					req.logIn(user, function(err){
-						done(err, user);
+			if(!user){
+				req.flash("error", "Password reset token is invalid or has expired");
+				return res.redirect("/");
+			}
+			
+			if(req.body.password === req.body.confirm){
+				user.setPassword(req.body.password, function(err){
+					user.resetPasswordToken = undefined;
+					user.resetPasswordExpires = undefined;
+					
+					user.save(function(err){
+						req.logIn(user, function(err){
+							done(err, user);
+						});
 					});
-				});
-			})
-		} else {
-			req.flash("error", "Passwords do not match");
-			return res.redirect("back");
-		}
+				})
+			} else {
+				req.flash("error", "Passwords do not match");
+				return res.redirect("back");
+			}
 		});
 		},
 		

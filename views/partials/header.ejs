@@ -4,7 +4,7 @@
 		<!--Make site responsive on mobile/tablet -->
 		
 		<meta name="description" content="Free site to add and track places you want to go">
-	 	 <meta name="keywords" content="Kyoto, Japan, travel">
+	 	<meta name="keywords" content="Kyoto, Japan, travel">
 		<meta charset="utf-8">
       	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -63,7 +63,7 @@
 								Welcome, <%=currentUser.username%>
 							</a>
 							<div class="user-dropdown-content">
-								<a href="/user/<%=currentUser._id%>"><strong>User profile</strong></a>
+								<a href="/users/profile/<%=currentUser._id%>"><strong>User profile</strong></a>
 								<% if(currentUser.isAdmin){ %>
 									<a class="nav-link" href="/admin">Admin page</a>
 								<% } %>
@@ -82,7 +82,7 @@
 						</li>
 						<!--If the page is too small, take them to the login page-->
 						<li class="nav-item d-block d-md-none">
-							<a class="nav-link" href="/login">Login</a>
+							<a class="nav-link" href="/users/login">Login</a>
 						</li>
 						<!--If the page is big enough, allow them to register via the modal-->
 						<li class="nav-item d-none d-md-block">
@@ -90,12 +90,12 @@
 						</li>
 						<!--If the page is too small, take them to the register page-->
 						<li class="nav-item d-block d-md-none">
-							<a class="nav-link" href="/register">Sign up</a>
+							<a class="nav-link" href="/users/register">Sign up</a>
 						</li>
 					<% } %>
 					<% if(currentUser){ %>
 						<li class="nav-item">
-							<a class="nav-link" href="/logout">Logout</a>
+							<a class="nav-link" href="/users/logout">Logout</a>
 						</li>
 					<% } %>
 				</ul>
