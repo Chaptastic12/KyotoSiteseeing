@@ -27,12 +27,13 @@ passport.deserializeUser(User.deserializeUser());
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
+//
 //               BEGIN HANDLING ROUTES BELOW
+//
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////
 //               SHOW OUR REGISTRATION PAGE
-//
 /////////////////////////////////////////////////////////////////////////////
 const showRegisterPage = (req, res, next) =>{
     res.render("register");
@@ -85,7 +86,6 @@ const registerUser = (req, res, next) =>{
 
 //////////////////////////////////////////////////////////////////////////////
 //               SHOW OUR LOGIN PAGE
-//
 /////////////////////////////////////////////////////////////////////////////
 const showLogInPage = (req, res, next) =>{
     res.render("login");
@@ -134,6 +134,158 @@ const showUserProfilePage = (req, res, next) =>{
 	})
 }
 
+
+//////////////////////////////////////////////////////////////////////////////
+//               SHOW OUR FORGOT PASSWORD PAGE
+/////////////////////////////////////////////////////////////////////////////
+const showForgotPasswordPage = (req, res, next) =>{
+    res.render("forgot");
+}
+
+
+////////////////////////////////////////////////////////////////////////////
+//               HANDLE RESETTING THE PASSWORD
+//
+//First, create and encrypt our token
+//Then, make sure the requested email exists. If so, assign the token and
+//set the expiry time.
+//Then, using nodemailer, send the e-mail with the token
+//NOTE THAT GMAIL IS UNRELIABLE AND NEEDS TO BE REMINDED TO ALLOW THIS TO WORK
+//THAT IS WHY THIS IS CURRENT DISABLED
+////////////////////////////////////////////////////////////////////////////
+const resetPassword = (req, res, next) =>{
+    // aSync.waterfall([
+	// 	function(done){
+	// 		crypto.randomBytes(20, function(err, buf){
+	// 			let token = buf.toString('hex');
+	// 			done(err, token); //create our token
+	// 		});
+	// 	},
+	// 	function(token, done){
+	// 		User.findOne({email: req.body.email}, function(err, user){
+	// 			if(!user){ //if there is no user found
+	// 				req.flash("error", "No accounts with that email found"); //warn them that it doesnt exist
+	// 				return res.redirect("/forgot"); //end this call and send them back to the page to start over
+	// 			}
+				
+	// 			user.resetPasswordToken = token; //set the token to the User profile
+	// 			user.resetPasswordExpires = Date.now() + 3600000 //1 hour, add the expiration for the token to the User profile
+	// 			user.save(function(err){
+	// 				done(err, token, user);
+	// 			});
+	// 		});
+	// 	},
+	// 	function(token, user, done){
+	// 		let smtpTransport = nodemailer.createTransport({
+	// 			service: "Gmail", 
+	// 			auth: {
+	// 			  user: "demodev996@gmail.com",
+	// 			  pass: process.env.GMAILPW
+	// 			}
+    //   		});
+	// 		let mailOptions = {
+	// 			to: user.email,
+	// 			from: "demodev996@gmail.com",
+	// 			subject: "Kyoto Sightseeing Password Reset",
+	// 			text: "You are receiving this because you (or someone else) has requested the reset of the password for your account." + "\n\n" +
+	// 			"Please click the following link, or paste it into your browser to complete the process." + "\n\n" +
+	// 			"http://" + req.headers.host + "/users/reset/" + token + "\n\n" +
+	// 			"If you did not request this, please ignore this email and your password will remain unchanged"
+	// 		};
+	// 		smtpTransport.sendMail(mailOptions, function(err){
+	// 			console.log("Password reset for " + user.email + " has been sent.");
+	// 			req.flash("success", "An e-mail has been sent to " + user.email + " with further instructions");
+	// 			res.redirect("/");
+	// 			done(err, "done");
+	// 		});
+	// 	}
+	// ], function(err){
+	// 	if(err){
+	// 		req.flash("error", err);
+	// 		console.log(err);
+	// 		res.redirect("/forgot");
+	// 	}
+	// });
+	res.redirect("/forgot");
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
+//               SHOW OUR RESET PASSWORD PAGE W/ TOKEN
+/////////////////////////////////////////////////////////////////////////////
+const showResetPasswordTokenPage = (req, res, next) =>{
+    User.findOne({resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now()}}, function(err, user){
+		if(!user){
+			req.flash("error", "Password reset token is invalid or has expired");
+			return res.redirect("/forgot");
+		}
+		res.render("reset", {token: req.params.token});
+	})
+}
+
+
+////////////////////////////////////////////////////////////////////////////
+//          HANDLE RESETTING THE PASSWORD IF TOKEN IS VALID
+//
+//First ensure that the token we get is valid. If so, allow them to continue
+//Let them enter in their new password and confirmation of said password
+//If they match, clear the token and expiry date from that user and update PW
+//Then, using nodemailer, send confirmation e-mail
+///////////////////////////////////////////////////////////////////////////
+const resetPasswordWithToken = (req, res, next) =>{
+    aSync.waterfall([
+		function(done){
+		User.findOne({resetPasswordToken: req.params.token}, function(err, user){
+			if(!user){
+				req.flash("error", "Password reset token is invalid or has expired");
+				return res.redirect("/");
+			}
+			
+			if(req.body.password === req.body.confirm){
+				user.setPassword(req.body.password, function(err){
+					user.resetPasswordToken = undefined;
+					user.resetPasswordExpires = undefined;
+					
+					user.save(function(err){
+						req.logIn(user, function(err){
+							done(err, user);
+						});
+					});
+				})
+			} else {
+				req.flash("error", "Passwords do not match");
+				return res.redirect("back");
+			}
+		});
+		},
+		
+		function(user, done){
+			let smtpTransport = nodemailer.createTransport({
+				service: "Gmail", 
+				auth: {
+				  user: "demodev996@gmail.com",
+				  pass: process.env.GMAILPW
+				}
+			});
+			let mailOptions = {
+				to: user.email,
+				from: "demodev996@gmail.com",
+				subject: "Kyoto Sightseeing Password Reset",
+				text: "Hello" + "\n\n" +
+				"This is confirmation that youre password has been reset for account " + user.email + "/n"
+			};
+			smtpTransport.sendMail(mailOptions, function(err){
+				console.log("Password reset for " + user.email + " has been completed");
+				req.flash("success", "Your password has been changed");
+				res.redirect("/");
+				done(err, "done");
+			});
+		}
+	]), function(err){
+		res.redirect("/");
+	};
+}
+
 ////////////////////////////////////////////////////////
 //  Export our controllers for use in user-routes.js
 ////////////////////////////////////////////////////////
@@ -143,3 +295,7 @@ exports.showLogInPage = showLogInPage;
 exports.logInUser = logInUser;
 exports.logOutUser = logOutUser;
 exports.showUserProfilePage = showUserProfilePage;
+exports.showForgotPasswordPage = showForgotPasswordPage;
+exports.resetPassword = resetPassword;
+exports.showResetPasswordTokenPage = showResetPasswordTokenPage;
+exports.resetPasswordWithToken = resetPasswordWithToken;
