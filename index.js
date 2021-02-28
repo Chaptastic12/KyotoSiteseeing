@@ -141,53 +141,41 @@ app.get("/destinations", function(req, res){
 	}
 });
 
-
-//Show all our Seasonal destinations
-app.get("/destinations/seasonal", function(req, res){
+//Show our seasonal desinations. Handle if they manually enter in an invalid option
+app.get("/destinations/seasonal/:id", (req, res) =>{
 	const perPage = 2; // Max number of items per page
 	const pageQuery = parseInt(req.query.page); //get the page number from the query
 	let pageNumber = pageQuery ? pageQuery : 1; //Current page number
-	
-	Destination.find({season: {$in: ["fall", "spring", "winter", "summer"]}}).skip((perPage * pageNumber) - perPage).limit(perPage).exec(function(err, foundDestination){
-		Destination.countDocuments({season: {$in: ["fall", "spring", "winter", "summer"]}}).exec(function(err, count){ //count how manmy destinations we have
+
+	let queryParams = {};
+	//Check if an id got passed or not
+	if(req.params.id === 'all'){
+		queryParams = {season: {$in: ["fall", "spring", "winter", "summer"] } };
+	}else if (req.params.id !== 'fall' || req.params.id !== 'spring' || req.params.id !== 'winter' || req.params.id !=='summer') {
+		req.flash("error", "That is not a valid season");
+		res.redirect("/");
+		} else {
+			queryParams = {season: req.params.id};
+	}
+
+	Destination.find(queryParams).skip((perPage * pageNumber) - perPage).limit(perPage).exec((err, foundDestination) =>{
+		Destination.countDocuments(queryParams).exec((err, count) =>{ //count how manmy destinations we have
 			if(err){
 				req.flash("error", err.message);
 				res.redirect("/");
 			} else {
-				res.render("destinations/seasonal", {destination: foundDestination, season: null, current: pageNumber, pages: Math.ceil(count / perPage), count:count});
+				res.render("destinations/seasonal", {destination: foundDestination, season: req.params.id, current: pageNumber, pages: Math.ceil(count / perPage), count:count});
 			}
 		});
 	});
-});
-
-//If they request a specific season...
-app.get("/destinations/seasonal/:id", function(req, res){
-	const perPage = 2; // Max number of items per page
-	const pageQuery = parseInt(req.query.page); //get the page number from the query
-	let pageNumber = pageQuery ? pageQuery : 1; //Current page number
-	
-	if(req.params.id === null){
-		res.redirect("/destinations/seasonal");
-	}else {
-		Destination.find({season: req.params.id}).skip((perPage * pageNumber) - perPage).limit(perPage).exec(function(err, foundDestination){
-			Destination.countDocuments({season: req.params.id}).exec(function(err, count){ //count how manmy destinations we have
-				if(err){
-					req.flash("error", err.message);
-					res.redirect("/");
-				} else {
-					res.render("destinations/seasonal", {destination: foundDestination, season: req.params.id, current: pageNumber, pages: Math.ceil(count / perPage), count:count});
-				}
-			});
-		});
-	}
 })
 
 //=====================================
 //SHOW THE DETAILS OF A DESTINATION
 //=====================================
-app.get("/destinations/view/:id", function(req, res){
+app.get("/destinations/view/:id", (req, res) =>{
 	//Populate with the comments, likes, and reviews for this specific destination.
-	Destination.findById(req.params.id).populate("comments").populate("likes").populate({path: "reviews", options: {sort: {createdAt: -1}}}).exec(function(err, foundDestination){
+	Destination.findById(req.params.id).populate("comments").populate("likes").populate({path: "reviews", options: {sort: {createdAt: -1}}}).exec((err, foundDestination) =>{
 		if(err || !foundDestination){
 			req.flash("error", "Error viewing destination");
 			res.redirect("/destinations");
@@ -228,7 +216,7 @@ app.post("/destinations/new", middleware.isLoggedIn, function(req, res){
 });
 
 //Show the edit page for editing a destiantion. need to own the destination.
-app.get("/destinations/:id/edit", middleware.ownsDestination, function(req, res){
+app.get("/destinations/edit/:id", middleware.ownsDestination, function(req, res){
 	Destination.findById(req.params.id, function(err, foundDestination){
 		if(err){
 			req.flash("error", err.message);
@@ -239,7 +227,7 @@ app.get("/destinations/:id/edit", middleware.ownsDestination, function(req, res)
 });
 
 //Handle the logic for the update page. need to own the destination
-app.put("/destinations/:id", middleware.ownsDestination, function(req, res){
+app.put("/destinations/edit/:id", middleware.ownsDestination, function(req, res){
 	//Find the destination using params.id. In order to prevent likes and else from being overwritte, specify what is being updated and proceed
 	Destination.findById(req.params.id, function(err, updatedDestination){
 		if(err){
@@ -268,7 +256,7 @@ app.put("/destinations/:id", middleware.ownsDestination, function(req, res){
 	});
 });
 //Handle the logic for deleting a destination. Need to be own the destination
-app.delete("/destinations/:id", middleware.ownsDestination, function(req, res){
+app.delete("/destinations/delete/:id", middleware.ownsDestination, function(req, res){
 	//Find the id sent and remove it
 	Destination.findByIdAndRemove(req.params.id, function(err, deleteDestination){
 		if(err){
@@ -533,7 +521,7 @@ app.get("/destinations/:id", function(req, res){
 			
 	//since were looking for multiple typeOf's, we need to use $in to accomplish this
 	Destination.find({typeOf: {$in: filterParams}}).skip((perPage * pageNumber) - perPage).limit(perPage).exec(function(err, foundDestination){
-		Destination.countDocuments({typeOf: {$in: filterParams}}).exec(function(err, count){ //count how manmy destinations we have
+		Destination.countDocuments({typeOf: {$in: filterParams}}).exec(function(err, count){ //count how many destinations we have
 			if(err){
 				req.flash("error", err.message);
 				res.redirect("/");

@@ -63,14 +63,14 @@ const registerUser = (req, res, next) =>{
         }
         
         //use the .register from local passport to create the user. pass in the password which .register will hash for us
-        User.register(newUser, req.body.password, function(err, user){
+        User.register(newUser, req.body.password, (err, user) =>{
             if(err){
                 //If we run into an error, return the error and redirect back the register page
                 req.flash("error", err.message);
                 return res.redirect("/register");
             } //don't need an 'else' because the return breaks us out if it fails
             //Authenticate them and log them in
-            passport.authenticate("local")(req, res, function(){
+            passport.authenticate("local")(req, res, () =>{
                 //If there is no error, welcome them and send them back to the landing page
                 req.flash("success", "Welcome, " + req.body.username);
                 res.redirect("/");
@@ -124,7 +124,7 @@ const logOutUser = (req, res, next) =>{
 //If successful, allow them to the page
 ////////////////////////////////////////////////////////////////////////////
 const showUserProfilePage = (req, res, next) =>{
-    User.findById(req.params.id).populate("likes").exec(function(err, foundUser){
+    User.findById(req.params.id).populate("likes").exec((err, foundUser) =>{
 		if(err){
 			req.flash("error", err.message);
 			res.redirect("back");
@@ -156,13 +156,13 @@ const showForgotPasswordPage = (req, res, next) =>{
 const resetPassword = (req, res, next) =>{
     // aSync.waterfall([
 	// 	function(done){
-	// 		crypto.randomBytes(20, function(err, buf){
+	// 		crypto.randomBytes(20, (err, buf) =>{
 	// 			let token = buf.toString('hex');
 	// 			done(err, token); //create our token
 	// 		});
 	// 	},
 	// 	function(token, done){
-	// 		User.findOne({email: req.body.email}, function(err, user){
+	// 		User.findOne({email: req.body.email}, (err, user) =>{
 	// 			if(!user){ //if there is no user found
 	// 				req.flash("error", "No accounts with that email found"); //warn them that it doesnt exist
 	// 				return res.redirect("/forgot"); //end this call and send them back to the page to start over
@@ -192,7 +192,7 @@ const resetPassword = (req, res, next) =>{
 	// 			"http://" + req.headers.host + "/users/reset/" + token + "\n\n" +
 	// 			"If you did not request this, please ignore this email and your password will remain unchanged"
 	// 		};
-	// 		smtpTransport.sendMail(mailOptions, function(err){
+	// 		smtpTransport.sendMail(mailOptions, (err) =>{
 	// 			console.log("Password reset for " + user.email + " has been sent.");
 	// 			req.flash("success", "An e-mail has been sent to " + user.email + " with further instructions");
 	// 			res.redirect("/");
@@ -214,7 +214,7 @@ const resetPassword = (req, res, next) =>{
 //               SHOW OUR RESET PASSWORD PAGE W/ TOKEN
 /////////////////////////////////////////////////////////////////////////////
 const showResetPasswordTokenPage = (req, res, next) =>{
-    User.findOne({resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now()}}, function(err, user){
+    User.findOne({resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now()}}, (err, user) =>{
 		if(!user){
 			req.flash("error", "Password reset token is invalid or has expired");
 			return res.redirect("/forgot");
@@ -234,20 +234,20 @@ const showResetPasswordTokenPage = (req, res, next) =>{
 ///////////////////////////////////////////////////////////////////////////
 const resetPasswordWithToken = (req, res, next) =>{
     aSync.waterfall([
-		function(done){
-		User.findOne({resetPasswordToken: req.params.token}, function(err, user){
+		(done) =>{
+		User.findOne({resetPasswordToken: req.params.token}, (err, user) =>{
 			if(!user){
 				req.flash("error", "Password reset token is invalid or has expired");
 				return res.redirect("/");
 			}
 			
 			if(req.body.password === req.body.confirm){
-				user.setPassword(req.body.password, function(err){
+				user.setPassword(req.body.password, (err) =>{
 					user.resetPasswordToken = undefined;
 					user.resetPasswordExpires = undefined;
 					
-					user.save(function(err){
-						req.logIn(user, function(err){
+					user.save((err) =>{
+						req.logIn(user, (err) =>{
 							done(err, user);
 						});
 					});
@@ -259,7 +259,7 @@ const resetPasswordWithToken = (req, res, next) =>{
 		});
 		},
 		
-		function(user, done){
+		(user, done) =>{
 			let smtpTransport = nodemailer.createTransport({
 				service: "Gmail", 
 				auth: {
@@ -274,14 +274,14 @@ const resetPasswordWithToken = (req, res, next) =>{
 				text: "Hello" + "\n\n" +
 				"This is confirmation that youre password has been reset for account " + user.email + "/n"
 			};
-			smtpTransport.sendMail(mailOptions, function(err){
+			smtpTransport.sendMail(mailOptions, (err) =>{
 				console.log("Password reset for " + user.email + " has been completed");
 				req.flash("success", "Your password has been changed");
 				res.redirect("/");
 				done(err, "done");
 			});
 		}
-	]), function(err){
+	]), (err) =>{
 		res.redirect("/");
 	};
 }

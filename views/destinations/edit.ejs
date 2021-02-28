@@ -1,7 +1,7 @@
 <%- include("../partials/header")%>
 
 	<div class="container">
-		<form action="/destinations/<%=destination.id%>?_method=PUT" method="POST" class="form-signin">
+		<form action="/destinations/edit/<%=destination.id%>?_method=PUT" method="POST" class="form-signin">
 			<h1 class="h3 mb-3 font-weight-normal text-center">Edit <%=destination.name%> </h1>
 			<div class="form-group">
 				<label for="inputName">Name</label>

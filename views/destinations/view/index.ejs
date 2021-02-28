@@ -105,8 +105,8 @@
 				<p class="card-text"><small class="text-muted"><%=destination.typeOf%> - Submitted on <%=destination.createdAt.toDateString()%> by <%=destination.author.username%></small></p>
 				<div>
 					<% if(currentUser && destination.author.id.equals(currentUser._id) || currentUser && currentUser.isAdmin === true){ %>
-						<a class="btn btn-sm btn-warning" href="/destinations/<%=destination.id%>/edit">Edit</a>
-						<form class="deleteForm" action="/destinations/<%=destination.id%>?_method=DELETE" method="POST">
+						<a class="btn btn-sm btn-warning" href="/destinations/edit/<%=destination.id%>">Edit</a>
+						<form class="deleteForm" action="/destinations/delete/<%=destination.id%>?_method=DELETE" method="POST">
 							<button class="btn btn-sm btn-danger" type="submit">Delete</button>
 						</form>
 					<% } %>
