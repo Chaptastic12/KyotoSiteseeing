@@ -201,6 +201,35 @@ const deleteDestination = (req, res, next) =>{
 	});
 };
 
+const showSpecificDestinationPage = (req, res, next) =>{
+    const perPage = 2; // Max number of items per page
+	const pageQuery = parseInt(req.query.page); 
+	let pageNumber = pageQuery ? pageQuery : 1; //Current page number
+	let filterParams = [""];
+	
+	if(req.params.id === "entertainment"){
+		filterParams = ["restaurant", "shop"];
+		}else if(req.params.id === "temples") {
+			filterParams = ["temple", "shrine"];
+			} else if(req.params.id === "exploration"){
+				filterParams = ["city"];
+				} else if(req.params.id === "hotels"){
+					filterParams =  ["hotel", "ryokan"];
+					} 
+			
+	//since were looking for multiple typeOf's, we need to use $in to accomplish this
+	Destination.find({typeOf: {$in: filterParams}}).skip((perPage * pageNumber) - perPage).limit(perPage).exec(function(err, foundDestination){
+		Destination.countDocuments({typeOf: {$in: filterParams}}).exec(function(err, count){ //count how many destinations we have
+			if(err){
+				req.flash("error", err.message);
+				res.redirect("/");
+			} else {
+				res.render("destinations/", {destination: foundDestination, count: count, id: '/'+req.params.id, title: req.params.id, current: pageNumber, pages: Math.ceil(count / perPage)});
+			}
+		})
+	});
+}
+
 exports.showMainDestinationPage = showMainDestinationPage;
 exports.showSeasonalDestinationPage = showSeasonalDestinationPage;
 exports.showDestinationDetailsPage = showDestinationDetailsPage;
@@ -209,3 +238,4 @@ exports.createNewDestinationLogic = createNewDestinationLogic;
 exports.showEditPageForDestination = showEditPageForDestination;
 exports.editDestinationInformation = editDestinationInformation;
 exports.deleteDestination = deleteDestination;
+exports.showSpecificDestinationPage = showSpecificDestinationPage;

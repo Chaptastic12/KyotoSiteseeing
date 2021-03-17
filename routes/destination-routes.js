@@ -31,5 +31,7 @@ router.put('/edit/:id', middleware.ownsDestination, destinationControllers.editD
 //Delete an existing destinaiton
 router.delete('/delete/:id', middleware.ownsDestination, destinationControllers.deleteDestination);
 
+router.get('/:id', destinationControllers.showSpecificDestinationPage);
+
 //Export our routes
 module.exports = router;

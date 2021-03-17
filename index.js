@@ -75,7 +75,7 @@ app.use(methodOverride("_method"));
 //==========================
 
 //Show the main landing Page
-app.get("/", function(req, res){
+app.get("/", (req, res) =>{
 	res.render("landing");
 })
 
@@ -97,44 +97,6 @@ app.use('/destinations/', destinationRoutes)
 //COMMENT, LIKE & REVIEW ROUTES
 //=========================
 app.use('/destinations/view/', destinationReviewAndCommentRoutes)
-
-
-//========================
-//DESTINATION PAGE ROUTES
-//Needs to be seperated for the destiantions/new route to work
-//=======================
-
-//Load our index page if they come in with an id parameter
-app.get("/destinations/:id", function(req, res){
-	
-	const perPage = 2; // Max number of items per page
-	const pageQuery = parseInt(req.query.page); 
-	let pageNumber = pageQuery ? pageQuery : 1; //Current page number
-	let filterParams = [""];
-	
-	if(req.params.id === "entertainment"){
-		filterParams = ["restaurant", "shop"];
-		}else if(req.params.id === "temples") {
-			filterParams = ["temple", "shrine"];
-			} else if(req.params.id === "exploration"){
-				filterParams = ["city"];
-				} else if(req.params.id === "hotels"){
-					filterParams =  ["hotel", "ryokan"];
-					} 
-			
-	//since were looking for multiple typeOf's, we need to use $in to accomplish this
-	Destination.find({typeOf: {$in: filterParams}}).skip((perPage * pageNumber) - perPage).limit(perPage).exec(function(err, foundDestination){
-		Destination.countDocuments({typeOf: {$in: filterParams}}).exec(function(err, count){ //count how many destinations we have
-			if(err){
-				req.flash("error", err.message);
-				res.redirect("/");
-			} else {
-				res.render("destinations/", {destination: foundDestination, count: count, id: '/'+req.params.id, title: req.params.id, current: pageNumber, pages: Math.ceil(count / perPage)});
-			}
-		})
-	});
-});
-
 
 //=========================
 //ADMIN ROUTES
@@ -192,14 +154,6 @@ app.get("*", function(req, res){
 	res.redirect("/");
 })
 
-//====================
-//DECLARATIONS
-//======================
-//Declaration for our search to match any character
-function escapeRegex(text) {
-	//match any characters globally
-	return text.replace(/[-[\]{}()*+?.,\\^$|@\s]/g, "\\&&");
-};
 
 //==========================
 //LISTEN FOR THE DATABASE
