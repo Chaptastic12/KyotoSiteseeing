@@ -4,6 +4,9 @@ const express = require('express'),
       flash = require('connect-flash'),
       passport = require('passport'),
       LocalStrategy = require('passport-local'),
+	  aSync	   = require("async"),
+	  nodemailer = require("nodemailer"),
+	  crypto   	 = require("crypto"),
       app = express();
       
 //Set it so we no longer need to add the .ejs to our routes
@@ -99,7 +102,7 @@ const showLogInPage = (req, res, next) =>{
 ////////////////////////////////////////////////////////////////////////////
 const logInUser = passport.authenticate("local", {
                     successRedirect: "back",
-                    failureRedirect: "/login"
+                    failureRedirect: "/users/login"
                 });
 
 

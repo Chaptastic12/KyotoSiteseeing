@@ -1,11 +1,10 @@
 const express = require('express'),
       { check } = require ('express-validator'),
-      middleware = require('../middleware/index');
+      middleware = require('../middleware/index'),
+      destinationControllers = require('../controllers/destination-controllers');
 
 //Need the router method specifically so we can export and import into app.js
 const router = express.Router();
-
-const destinationControllers = require('../controllers/destination-controllers');
 
 
 //Show our main index page that will list all of the destinations
@@ -18,10 +17,10 @@ router.get('/seasonal/:id', destinationControllers.showSeasonalDestinationPage);
 router.get('/view/:id', destinationControllers.showDestinationDetailsPage);
 
 //Show the creation page for a new destination
-router.get('/new', middleware.isLoggedIn, destinationControllers.createNewDestination);
+router.get('/create/new', middleware.isLoggedIn, destinationControllers.createNewDestination);
 
 //Handle the creation logic for a new destination
-router.post('/new', middleware.isLoggedIn, destinationControllers.createNewDestinationLogic);
+router.post('/create/new', middleware.isLoggedIn, destinationControllers.createNewDestinationLogic);
 
 //Show the edit page for an existing destination
 router.get('/edit/:id', middleware.ownsDestination, destinationControllers.showEditPageForDestination);

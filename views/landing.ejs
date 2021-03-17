@@ -95,7 +95,7 @@
             	<p>Create an account, login, and immediately begin browsing! Look for different places to visit, eat, and more! Find a place you want to go to? Save it to your Visit List!</p>
 				<%if(currentUser){%>
 					<div class="">
-						<p><a class="btn btn-danger" href="/user/<%=currentUser.id%>" role="button">View Like List &raquo;</a></p>
+						<p><a class="btn btn-danger" href="/users/profile/<%=currentUser.id%>" role="button">View Like List &raquo;</a></p>
 					</div>
 				<% } else {%>
 				<!--Add signup logic dependent on screen size-->
