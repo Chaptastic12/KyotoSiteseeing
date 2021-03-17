@@ -107,9 +107,11 @@ middlewareObj.checkReviewOwnership = function(req, res, next){
 //Check if a user has already submitted a review or not
 middlewareObj.checkReviewExistence = function(req, res, next){
 	if(req.isAuthenticated()){ // verify that they are logged in
-		Destination.findById(req.params.id).populate("reviews").exec(function(err, foundDestination){ //find the destination with req.params.id, populate its reviews and execuate the function
+		console.log(req.params);
+		Destination.findById(req.params.id).populate("reviews").exec(function(err, foundDestination){ //find the destination with req.params.id, populate its reviews and execute the function
 			if(err || !foundDestination){ //if theres an error or we didn't find a destination with that Id, show an error message
-				req.flash("error", err.message);
+				req.flash("error", 'there was an error processing your request');
+				console.log(foundDestination);
 				res.redirect("back");
 			} else {
 				console.log(foundDestination.reviews);
