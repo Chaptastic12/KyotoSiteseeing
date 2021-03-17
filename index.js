@@ -3,27 +3,19 @@
 //====================================
 
 //Require all of our packages
-const express = require("express"),
-	  app 	  = express(),
-	  router = express.Router(),
-	  mongoose = require("mongoose"),
-	  bodyParser = require("body-parser"),
-	  methodOverride = require("method-override"),
-	  flash			 = require("connect-flash"),
-	  User 	  = require("./models/user"),
-	  Comment = require("./models/comments"),
-	  Destination = require("./models/destinations"),
-	  Review = require("./models/review"),
-	  middleware = require("./middleware/index"),
-	  passport	 	 = require("passport"),
-	  LocalStrategy  = require("passport-local"),
-	  aSync	   = require("async"),
-	  nodemailer = require("nodemailer"),
-	  crypto   	 = require("crypto"),
-	  dotenv = require("dotenv"),
-	  userRoutes = require('./routes/user-routes'),
-	  destinationRoutes = require('./routes/destination-routes'),
-	  destinationReviewAndCommentRoutes = require('./routes/destination-rev-com-routes');
+const express 							= require("express"),
+	  app 	  							= express(),
+	  mongoose 							= require("mongoose"),
+	  bodyParser						= require("body-parser"),
+	  methodOverride 					= require("method-override"),
+	  flash			 					= require("connect-flash"),
+	  User 	  							= require("./models/user"),
+	  passport	 	 					= require("passport"),
+	  LocalStrategy  					= require("passport-local"),
+	  userRoutes						= require('./routes/user-routes'),
+	  destinationRoutes 				= require('./routes/destination-routes'),
+	  destinationReviewAndCommentRoutes = require('./routes/destination-rev-com-routes'),
+	  adminRoutes 						= require('./routes/admin-routes');
 
 
 require('dotenv').config();
@@ -48,6 +40,7 @@ mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true, useUnifiedTo
 app.use(flash());
 
 //Passport Configuration
+//Required in index.js for flash() to work as a session is required
 app.use(require("express-session")({
 	secret: process.env.PASSPORT_KEY,
 	resave: false,
@@ -101,49 +94,7 @@ app.use('/destinations/view/', destinationReviewAndCommentRoutes)
 //=========================
 //ADMIN ROUTES
 //=========================
-
-//show the main landing page
-app.get("/admin", middleware.checkAdminPriveleges, function(req, res){
-	User.find(function(err, foundUsers){
-		if(err){
-			req.flash("error", "Could not find users");
-			res.redirect("/");
-		} else {
-			Destination.find(function(err, foundDestinations){
-				if(err){
-					req.flash("error", "Could not find destinations");
-					res.redirect("/");
-				} else {
-					res.render("admin", {users: foundUsers, destinations: foundDestinations});
-				}
-			})
-		}
-	})
-})
-
-app.post("/admin/edit/:id", middleware.checkAdminPriveleges, function(req, res){
-	User.findOne({id: req.params.id}, function(err, foundUser){
-		if(err){
-			req.flash("error", err.message);
-			res.redirect("back");
-		} else {
-			if(req.body.userEdit.isAdmin === "on"){
-				req.body.userEdit.isAdmin = true;;
-			} else{
-				req.body.userEdit.isAdmin = false;
-			}
-			User.findByIdAndUpdate(req.params.id, req.body.userEdit, function(err, foundUser){
-				if(err){
-					req.flash("error", err.message);
-					res.redirect("back");
-				} else {
-					req.flash("success", "User " + foundUser.username +  " has been updated");
-					res.redirect("/admin");
-				}
-			})
-		}
-	})
-});
+app.use('/admin', adminRoutes);
 
 //=========================
 //CATCH ALL ROUTE
@@ -153,7 +104,6 @@ app.get("*", function(req, res){
 	req.flash("error", "That page does not exist");
 	res.redirect("/");
 })
-
 
 //==========================
 //LISTEN FOR THE DATABASE
