@@ -12,12 +12,12 @@ app.set("view engine", "ejs");
 app.use( flash() );
 
 const showAdminPage = (req, res, next) =>{
-    User.find(function(err, foundUsers){
+    User.find((err, foundUsers) =>{
 		if(err){
 			req.flash("error", "Could not find users");
 			res.redirect("/");
 		} else {
-			Destination.find(function(err, foundDestinations){
+			Destination.find((err, foundDestinations) =>{
 				if(err){
 					req.flash("error", "Could not find destinations");
 					res.redirect("/");
@@ -30,7 +30,7 @@ const showAdminPage = (req, res, next) =>{
 }
 
 const editUserLogic = (req, res, next) =>{
-    User.findOne({id: req.params.id}, function(err, foundUser){
+    User.findOne({id: req.params.id}, (err, foundUser) =>{
 		if(err){
 			req.flash("error", err.message);
 			res.redirect("back");
@@ -40,7 +40,7 @@ const editUserLogic = (req, res, next) =>{
 			} else{
 				req.body.userEdit.isAdmin = false;
 			}
-			User.findByIdAndUpdate(req.params.id, req.body.userEdit, function(err, foundUser){
+			User.findByIdAndUpdate(req.params.id, req.body.userEdit, (err, foundUser) =>{
 				if(err){
 					req.flash("error", err.message);
 					res.redirect("back");

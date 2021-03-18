@@ -100,7 +100,7 @@ app.use('/admin', adminRoutes);
 //CATCH ALL ROUTE
 //=========================
 //If a route doesn't exist, send them back to the landing page
-app.get("*", function(req, res){
+app.get("*", (req, res) =>{
 	req.flash("error", "That page does not exist");
 	res.redirect("/");
 })
@@ -110,6 +110,6 @@ app.get("*", function(req, res){
 //==========================
 
 const port = process.env.PORT || 3000;
-app.listen(port, process.env.IP, function(){
+app.listen(port, process.env.IP, () =>{
 	console.log("Koyto Server Has Started");
 });

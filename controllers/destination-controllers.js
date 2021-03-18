@@ -1,6 +1,7 @@
 //Initialize 'express' and 'app' so that we can properly set up other dependencies
 const express = require('express'),
       Destination = require('../models/destinations'),
+      Comment = require('../models/comments'),
       flash = require('connect-flash'),
       app = express();
 
@@ -14,7 +15,7 @@ app.use( flash() );
 //DECLARATIONS
 //======================
 //Declaration for our search to match any character
-function escapeRegex(text) {
+const escapeRegex = (text) =>{
 	//match any characters globally
 	return text.replace(/[-[\]{}()*+?.,\\^$|@\s]/g, "\\&&");
 };
@@ -47,8 +48,8 @@ const showMainDestinationPage = (req, res, next) =>{
 		//Put it into the RegExp() so we are effectively searching the right term again
 		const regex = new RegExp(escapeRegex(spliceSearch), 'gi');
 		//If wanting to expand in the future, use Destination.find({$or: [{name: regex},{description: regex}]}, function
-		Destination.find({name: regex}).skip((perPage * searchPageNumber) - perPage).limit(perPage).exec(function(err, foundDestination){
-			Destination.countDocuments({name:regex}).exec(function(err, count){ //count how many destinations we have
+		Destination.find({name: regex}).skip((perPage * searchPageNumber) - perPage).limit(perPage).exec((err, foundDestination) =>{
+			Destination.countDocuments({name:regex}).exec((err, count) =>{ //count how many destinations we have
 				if(err){
 					req.flash("error", err.message);
 					res.redirect("/landing");
@@ -64,8 +65,8 @@ const showMainDestinationPage = (req, res, next) =>{
 			});
 		});
 	} else { //If not a search, just load all of the destinations
-		Destination.find({}).skip((perPage * pageNumber) - perPage).limit(perPage).exec(function(err, foundDestination){
-			Destination.countDocuments({}).exec(function(err, count){ //count how manmy destinations we have
+		Destination.find({}).skip((perPage * pageNumber) - perPage).limit(perPage).exec((err, foundDestination) =>{
+			Destination.countDocuments({}).exec((err, count) =>{ //count how manmy destinations we have
 				if(err){
 					req.flash("error", err.message);
 					 res.redirect("/landing");
@@ -126,7 +127,7 @@ const createNewDestinationLogic = (req, res, next) =>{
 	req.body.destination.prefecture = "Kyoto Prefecture";
 
 	//Create the new destination using the 'destiantion' object received from the form
-	Destination.create(req.body.destination, function(err, newDestination){
+	Destination.create(req.body.destination, (err, newDestination) =>{
 		if(err){
 			//If there is an error, pass that error along
 			req.flash("error", err.message);
@@ -142,7 +143,7 @@ const createNewDestinationLogic = (req, res, next) =>{
 };
 
 const showEditPageForDestination = (req, res, next) =>{
-    Destination.findById(req.params.id, function(err, foundDestination){
+    Destination.findById(req.params.id, (err, foundDestination) =>{
 		if(err){
 			req.flash("error", err.message);
 			res.redirect("/destinations/");
@@ -153,7 +154,7 @@ const showEditPageForDestination = (req, res, next) =>{
 
 const editDestinationInformation = (req, res, next)=>{
     //Find the destination using params.id. In order to prevent likes and else from being overwritte, specify what is being updated and proceed
-	Destination.findById(req.params.id, function(err, updatedDestination){
+	Destination.findById(req.params.id, (err, updatedDestination) =>{
 		if(err){
 			//If error, let them know and redirect back
 			req.flash("error", err.message);
@@ -166,7 +167,7 @@ const editDestinationInformation = (req, res, next)=>{
 			updatedDestination.cost = req.body.destination.cost;
 			updatedDestination.season = req.body.destination.season;
 			updatedDestination.address = req.body.destination.address;
-			updatedDestination.save(function(err){
+			updatedDestination.save((err) =>{
 									if(err){
 										req.flash("error", err.message);
 										res.redirect("back");
@@ -182,13 +183,13 @@ const editDestinationInformation = (req, res, next)=>{
 
 const deleteDestination = (req, res, next) =>{
     //Find the id sent and remove it
-	Destination.findByIdAndRemove(req.params.id, function(err, deleteDestination){
+	Destination.findByIdAndRemove(req.params.id, (err, deleteDestination) =>{
 		if(err){
 			req.flash("error", err.message);
 			res.redirect("/destinations");
 		} else {
 			//delete all comments associated
-			Comment.remove({_id: {$in: deleteDestination.comments}}, function(err){
+			Comment.remove({_id: {$in: deleteDestination.comments}}, (err) =>{
 				if(err){
 					req.flash("error", err.message);
 					res.redirect("/destinations");
@@ -218,8 +219,8 @@ const showSpecificDestinationPage = (req, res, next) =>{
 					} 
 			
 	//since were looking for multiple typeOf's, we need to use $in to accomplish this
-	Destination.find({typeOf: {$in: filterParams}}).skip((perPage * pageNumber) - perPage).limit(perPage).exec(function(err, foundDestination){
-		Destination.countDocuments({typeOf: {$in: filterParams}}).exec(function(err, count){ //count how many destinations we have
+	Destination.find({typeOf: {$in: filterParams}}).skip((perPage * pageNumber) - perPage).limit(perPage).exec((err, foundDestination) =>{
+		Destination.countDocuments({typeOf: {$in: filterParams}}).exec((err, count) =>{ //count how many destinations we have
 			if(err){
 				req.flash("error", err.message);
 				res.redirect("/");
