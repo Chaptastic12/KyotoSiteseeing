@@ -44,7 +44,7 @@ const showMainDestinationPage = (req, res, next) =>{
 		//Find the index where the first ? is.
 		const n = req.query.search.indexOf('?');
 		//Create a substring of everything that is then BEFORE that first ?
-		const spliceSearch = req.query.search.substring(0, n!=-1 ? n: req.query.search.length);
+		const spliceSearch = req.query.search.substring(0, n!=-1 ? n : req.query.search.length);
 		//Put it into the RegExp() so we are effectively searching the right term again
 		const regex = new RegExp(escapeRegex(spliceSearch), 'gi');
 		//If wanting to expand in the future, use Destination.find({$or: [{name: regex},{description: regex}]}, function
