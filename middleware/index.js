@@ -148,6 +148,7 @@ middlewareObj.checkAdminPriveleges = function(req, res, next){
 
 middlewareObj.logInUser = function(req, res, next){
 	
+	
 }
 
 

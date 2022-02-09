@@ -36,7 +36,7 @@ const likeDestinationLogic = (req, res, next) =>{
 				}
 				//Save the user and the destination.
 				likeUser.save();
-				foundDestination.save((errr) =>{
+				foundDestination.save((err) =>{
 					if(err){
 						req.flash("error", err.message);
 						return res.redirect("back");
