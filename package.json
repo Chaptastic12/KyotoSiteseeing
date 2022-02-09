@@ -22,6 +22,7 @@
     "method-override": "^3.0.0",
     "moment": "^2.27.0",
     "mongoose": "^5.9.23",
+    "mpath": "^0.8.4",
     "nodemailer": "^6.7.2",
     "nodemon": "^2.0.7",
     "passport": "^0.4.1",
